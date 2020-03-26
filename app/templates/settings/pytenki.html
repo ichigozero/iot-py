@@ -3,4 +3,50 @@
 
 {% block content %}
 {{ navbar(current_user) }}
+<div class="container my-5">
+  <form action="" method="post" novalidate>
+    {{ form.hidden_tag() }}
+    <div class="card">
+      <div class="card-header">Weather LED</div>
+      <div class="card-body">
+        <div class="form-group row">
+          {{ form.led_fine.label(class_="col-lg-2 col-form-label") }}
+          <div class="col-lg-10">
+            {{ form.led_fine(class_="form-control") }}
+          </div>
+        </div>
+        <div class="form-group row">
+          {{ form.led_cloud.label(class_="col-lg-2 col-form-label") }}
+          <div class="col-lg-10">
+            {{ form.led_cloud(class_="form-control") }}
+          </div>
+        </div>
+        <div class="form-group row">
+          {{ form.led_rain.label(class_="col-lg-2 col-form-label") }}
+          <div class="col-lg-10">
+            {{ form.led_rain(class_="form-control") }}
+          </div>
+        </div>
+        <div class="form-group row">
+          {{ form.led_snow.label(class_="col-lg-2 col-form-label") }}
+          <div class="col-lg-10">
+            {{ form.led_snow(class_="form-control") }}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card mt-4 mb-4">
+      <div class="card-header">Button</div>
+      <div class="card-body">
+        <div class="form-group row">
+          {{ form.tts_button.label(class_="col-lg-2 col-form-label") }}
+          <div class="col-lg-10">
+            {{ form.tts_button(class_="form-control") }}
+          </div>
+        </div>
+      </div>
+    </div>
+    {{ form.submit(class_="btn btn-primary") }}
+  </form>
+</div>
 {% endblock %}
