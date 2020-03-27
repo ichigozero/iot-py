@@ -1,6 +1,6 @@
 from flask import Blueprint
 
-from app.models import db, User
+from app.models import db, Setting, User
 
 
 bp = Blueprint('cli', __name__)
@@ -23,10 +23,20 @@ def add_admin_user():
     db.session.add(user)
 
 
+def add_settings():
+    print('Add default settings')
+
+    set1 = Setting(app='pytenki')
+    set2 = Setting(app='gpio')
+
+    db.session.add_all([set1, set2])
+
+
 @bp.cli.command('init_db')
 def init_db():
     """Initialise DB"""
     clear_data()
     add_admin_user()
+    add_settings()
 
     db.session.commit()
