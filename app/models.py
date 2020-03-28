@@ -37,7 +37,10 @@ class Setting(db.Model):
     @staticmethod
     def load_setting(app):
         setting = Setting.query.filter_by(app=app).first()
-        return json.loads(setting.value)
+        try:
+            return json.loads(setting.value)
+        except TypeError:
+            return None
 
     @staticmethod
     def update_setting(app, raw_data):

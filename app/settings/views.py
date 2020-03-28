@@ -1,3 +1,6 @@
+import operator
+from functools import reduce
+
 from flask import redirect, render_template, url_for
 from flask_login import login_required
 
@@ -22,10 +25,24 @@ def store_form_data_to_db(form):
     )
 
 
+def get_dict_val(dict_obj, map_list):
+    try:
+        return reduce(operator.getitem, map_list, dict_obj)
+    except (KeyError, TypeError):
+        return ''
+
+
 @bp.route('/settings/pytenki', methods=['GET', 'POST'])
 @login_required
 def pytenki():
-    form = PyTenkiForm()
+    gpio = Setting.load_setting('gpio')
+    form = PyTenkiForm(
+        led_fine=get_dict_val(gpio, ['led', 'fine']),
+        led_cloud=get_dict_val(gpio, ['led', 'cloud']),
+        led_rain=get_dict_val(gpio, ['led', 'rain']),
+        led_snow=get_dict_val(gpio, ['led', 'snow']),
+        tts_button=get_dict_val(gpio, ['tts_button']),
+    )
 
     if form.validate_on_submit():
         store_form_data_to_db(form)
