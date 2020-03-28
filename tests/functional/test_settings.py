@@ -34,6 +34,26 @@ def test_update_pytenki_settings_with_null_values(client, login_client):
         assert element in response.data
 
 
+def test_update_pytenki_settings_with_duplicate_values(client, login_client):
+    response = client.post(
+        url_for('settings.pytenki'),
+        data=dict(led_fine='4', led_cloud='4',
+                  led_rain='4', led_snow='4',
+                  tts_button='4'),
+        follow_redirects=True
+    )
+
+    assert response.status_code == 200
+    elements = (
+        b'"form-control is-invalid" id="led_cloud"',
+        b'"form-control is-invalid" id="led_rain"',
+        b'"form-control is-invalid" id="led_snow"',
+        b'"form-control is-invalid" id="tts_button"'
+    )
+    for element in elements:
+        assert element in response.data
+
+
 def test_update_pytenki_settings(client, login_client):
     response = client.post(
         url_for('settings.pytenki'),

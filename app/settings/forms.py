@@ -30,3 +30,22 @@ class PyTenkiForm(FlaskForm):
     tts_button = gpio_select_field(u'Text-to-Speech')
 
     submit = SubmitField('Apply')
+
+    def validate(self):
+        if not FlaskForm.validate(self):
+            return False
+
+        seen = set()
+        result = True
+        message = 'Unable to assign GPIO pin more than once at a time'
+
+        for field in [self.led_fine, self.led_cloud,
+                      self.led_rain, self.led_snow,
+                      self.tts_button]:
+            if field.data in seen:
+                field.errors.append(message)
+                result = False
+            else:
+                seen.add(field.data)
+
+        return result
