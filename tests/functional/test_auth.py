@@ -17,6 +17,7 @@ def test_user_login(login_client):
     assert response.status_code == 200
     assert request.path == url_for('main.index')
     assert not current_user.is_anonymous
+    assert b'Settings' in response.data
     assert b'Log Out' in response.data
 
 

@@ -1,3 +1,5 @@
+import json
+
 from flask_login import UserMixin
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -22,3 +24,25 @@ class User(UserMixin, db.Model):
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
+
+
+class Setting(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    app = db.Column(db.String(32), index=True, unique=True)
+    value = db.Column(db.UnicodeText)
+
+    def __repr__(self):
+        return '<Setting {}>'.format(self.app)
+
+    @staticmethod
+    def load_setting(app):
+        setting = Setting.query.filter_by(app=app).first()
+        try:
+            return json.loads(setting.value)
+        except TypeError:
+            return None
+
+    @staticmethod
+    def update_setting(app, raw_data):
+        setting = Setting.query.filter_by(app=app).first()
+        setting.value = json.dumps(raw_data)

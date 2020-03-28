@@ -1,9 +1,10 @@
-import pytest
+import json
 
+import pytest
 from flask import url_for
 
 from app import create_app, db
-from app.models import User
+from app.models import User, Setting
 from config import Config
 
 
@@ -40,7 +41,16 @@ def app_db():
     user = User(username='foo')
     user.set_password('bar')
 
+    setting = Setting(
+        app='gpio',
+        value=json.dumps({
+            'led': {'fine': '2', 'cloud': '3'},
+            'tts_button': '4'
+        })
+    )
+
     db.session.add(user)
+    db.session.add(setting)
     db.session.commit()
 
     yield db
