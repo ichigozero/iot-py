@@ -1,7 +1,7 @@
 import operator
 from functools import reduce
 
-from flask import redirect, render_template, url_for
+from flask import flash, redirect, render_template, url_for
 from flask_login import login_required
 
 from app import db
@@ -47,6 +47,7 @@ def pytenki():
     if form.validate_on_submit():
         store_form_data_to_db(form)
         db.session.commit()
+        flash('PyTenki Settings Have Been Updated Successfully', 'success')
         return redirect(url_for('settings.pytenki'))
 
     return render_template(
