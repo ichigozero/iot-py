@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import SelectField, SubmitField
+from wtforms.validators import DataRequired
 
 
 def gpio_pins():
@@ -13,11 +14,19 @@ def gpio_pins():
     return choices
 
 
+def gpio_select_field(field_name):
+    return SelectField(
+        field_name,
+        choices=gpio_pins(),
+        validators=[DataRequired()]
+    )
+
+
 class PyTenkiForm(FlaskForm):
-    led_fine = SelectField(u'Fine', choices=gpio_pins())
-    led_cloud = SelectField(u'Cloud', choices=gpio_pins())
-    led_rain = SelectField(u'Rain', choices=gpio_pins())
-    led_snow = SelectField(u'Snow', choices=gpio_pins())
-    tts_button = SelectField(u'Text-to-Speech', choices=gpio_pins())
+    led_fine = gpio_select_field(u'Fine')
+    led_cloud = gpio_select_field(u'Cloud')
+    led_rain = gpio_select_field(u'Rain')
+    led_snow = gpio_select_field(u'Snow')
+    tts_button = gpio_select_field(u'Text-to-Speech')
 
     submit = SubmitField('Apply')
