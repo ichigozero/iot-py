@@ -11,6 +11,15 @@ def test_fetch_login_page(client):
     assert b'Log In' in response.data
 
 
+def test_invalid_user_login(client, app_db):
+    response = client.post(
+        url_for('auth.login'),
+        data=dict(username='foo', password='foo'),
+        follow_redirects=True
+    )
+    assert b'Invalid username or password' in response.data
+
+
 def test_user_login(login_client):
     response = login_client
 
