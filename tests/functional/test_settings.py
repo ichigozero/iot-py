@@ -23,6 +23,7 @@ def test_update_pytenki_settings(client, login_client):
     )
 
     assert response.status_code == 200
+    assert b'PyTenki Settings Have Been Updated Successfully' in response.data
     assert b'<option selected value="4">' in response.data
     assert b'<option selected value="17">' in response.data
     assert b'<option selected value="27">' in response.data
