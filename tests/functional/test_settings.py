@@ -58,7 +58,7 @@ def test_update_pytenki_settings_with_duplicate_values(client, login_client):
         assert element in response.data
 
 
-def test_update_pytenki_settings(client, login_client):
+def test_successful_pytenki_settings_update(client, login_client):
     response = client.post(
         url_for('settings.pytenki'),
         data=dict(led_fine='4', led_cloud='17',
