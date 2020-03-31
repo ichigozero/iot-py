@@ -41,7 +41,11 @@ def app_db():
     user = User(username='foo')
     user.set_password('bar')
 
-    setting = Setting(
+    setting_1 = Setting(
+        app='pytenki',
+        value=json.dumps({})
+    )
+    setting_2 = Setting(
         app='gpio',
         value=json.dumps({
             'led': {'fine': '2', 'cloud': '3'},
@@ -49,8 +53,11 @@ def app_db():
         })
     )
 
-    db.session.add(user)
-    db.session.add(setting)
+    db.session.add_all([
+        user,
+        setting_1,
+        setting_2
+    ])
     db.session.commit()
 
     yield db

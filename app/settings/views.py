@@ -12,6 +12,12 @@ from app.settings.forms import PyTenkiForm
 
 def store_form_data_to_db(form):
     Setting.update_setting(
+        app='pytenki',
+        raw_data={
+            'fetch_intvl': form.fetch_intvl.data,
+        }
+    )
+    Setting.update_setting(
         app='gpio',
         raw_data={
             'led': {
@@ -35,8 +41,10 @@ def get_dict_val(dict_obj, map_list):
 @bp.route('/settings/pytenki', methods=['GET', 'POST'])
 @login_required
 def pytenki():
+    pytenki = Setting.load_setting('pytenki')
     gpio = Setting.load_setting('gpio')
     form = PyTenkiForm(
+        fetch_intvl=get_dict_val(pytenki, ['fetch_intvl']) or 35,
         led_fine=get_dict_val(gpio, ['led', 'fine']),
         led_cloud=get_dict_val(gpio, ['led', 'cloud']),
         led_rain=get_dict_val(gpio, ['led', 'rain']),
