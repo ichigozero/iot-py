@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import SelectField, SubmitField
+from wtforms.fields.html5 import IntegerRangeField
 from wtforms.validators import DataRequired
 
 
@@ -23,6 +24,7 @@ def gpio_select_field(field_name):
 
 
 class PyTenkiForm(FlaskForm):
+    fetch_intvl = IntegerRangeField(u'Data Fetch Interval')
     led_fine = gpio_select_field(u'Fine')
     led_cloud = gpio_select_field(u'Cloud')
     led_rain = gpio_select_field(u'Rain')

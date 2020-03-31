@@ -35,8 +35,10 @@ def get_dict_val(dict_obj, map_list):
 @bp.route('/settings/pytenki', methods=['GET', 'POST'])
 @login_required
 def pytenki():
+    pytenki = Setting.load_setting('pytenki')
     gpio = Setting.load_setting('gpio')
     form = PyTenkiForm(
+        fetch_intvl=get_dict_val(pytenki, ['fetch_intvl']) or 35,
         led_fine=get_dict_val(gpio, ['led', 'fine']),
         led_cloud=get_dict_val(gpio, ['led', 'cloud']),
         led_rain=get_dict_val(gpio, ['led', 'rain']),

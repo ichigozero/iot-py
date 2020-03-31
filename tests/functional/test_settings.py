@@ -9,6 +9,7 @@ def test_fetch_pytenki_settings_page(client, login_client):
 
     assert response.status_code == 200
     elements = (
+        b'name="fetch_intvl" step="5" type="range" value="35"',
         b'<option selected value="2">',
         b'<option selected value="3">',
         b'<option selected value="4">'
