@@ -12,7 +12,7 @@ def test_fetch_pytenki_settings_page(client, login_client):
         b'name="fetch_intvl" step="5" type="range" value="35"',
         b'<option selected value="2">',
         b'<option selected value="3">',
-        b'<option selected value="4">'
+        b'<option selected value="4">',
     )
     for element in elements:
         assert element in response.data
@@ -64,13 +64,14 @@ def test_successful_pytenki_settings_update(client, login_client):
         url_for('settings.pytenki'),
         data=dict(led_fine='4', led_cloud='17',
                   led_rain='27', led_snow='22',
-                  tts_button='2'),
+                  tts_button='2', fetch_intvl='20'),
         follow_redirects=True
     )
 
     assert response.status_code == 200
     elements = (
         b'PyTenki Settings Have Been Updated Successfully',
+        b'name="fetch_intvl" step="5" type="range" value="20"',
         b'<option selected value="4">',
         b'<option selected value="17">',
         b'<option selected value="27">',

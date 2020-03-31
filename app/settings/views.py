@@ -12,6 +12,12 @@ from app.settings.forms import PyTenkiForm
 
 def store_form_data_to_db(form):
     Setting.update_setting(
+        app='pytenki',
+        raw_data={
+            'fetch_intvl': form.fetch_intvl.data,
+        }
+    )
+    Setting.update_setting(
         app='gpio',
         raw_data={
             'led': {
