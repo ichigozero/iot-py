@@ -8,9 +8,13 @@ def test_fetch_pytenki_settings_page(client, login_client):
     response = client.get(url_for('settings.pytenki'))
 
     assert response.status_code == 200
-    assert b'<option selected value="2">' in response.data
-    assert b'<option selected value="3">' in response.data
-    assert b'<option selected value="4">' in response.data
+    elements = (
+        b'<option selected value="2">',
+        b'<option selected value="3">',
+        b'<option selected value="4">'
+    )
+    for element in elements:
+        assert element in response.data
 
 
 def test_update_pytenki_settings_with_null_values(client, login_client):
@@ -54,7 +58,7 @@ def test_update_pytenki_settings_with_duplicate_values(client, login_client):
         assert element in response.data
 
 
-def test_update_pytenki_settings(client, login_client):
+def test_successful_pytenki_settings_update(client, login_client):
     response = client.post(
         url_for('settings.pytenki'),
         data=dict(led_fine='4', led_cloud='17',
@@ -64,9 +68,13 @@ def test_update_pytenki_settings(client, login_client):
     )
 
     assert response.status_code == 200
-    assert b'PyTenki Settings Have Been Updated Successfully' in response.data
-    assert b'<option selected value="4">' in response.data
-    assert b'<option selected value="17">' in response.data
-    assert b'<option selected value="27">' in response.data
-    assert b'<option selected value="22">' in response.data
-    assert b'<option selected value="2">' in response.data
+    elements = (
+        b'PyTenki Settings Have Been Updated Successfully',
+        b'<option selected value="4">',
+        b'<option selected value="17">',
+        b'<option selected value="27">',
+        b'<option selected value="22">',
+        b'<option selected value="2">'
+    )
+    for element in elements:
+        assert element in response.data
