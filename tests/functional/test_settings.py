@@ -9,6 +9,12 @@ def test_fetch_pytenki_settings_page(client, login_client):
 
     assert response.status_code == 200
     elements = (
+        b'<option value="1">region</option>',
+        b'<option value="1">prefecture</option>',
+        b'<option value="1">city_1</option>',
+        b'<option value="2">city_2</option>',
+        b'<option value="1">pinpoint_1</option>',
+        b'<option value="2">pinpoint_2</option>',
         b'name="fetch_intvl" step="5" type="range" value="35"',
         b'<option selected value="2">',
         b'<option selected value="3">',
@@ -42,7 +48,9 @@ def test_update_pytenki_settings_with_null_values(client, login_client):
 def test_update_pytenki_settings_with_duplicate_values(client, login_client):
     response = client.post(
         url_for('settings.pytenki'),
-        data=dict(led_fine='4', led_cloud='4',
+        data=dict(region='1', prefecture='1',
+                  city='2', pinpoint_loc='2',
+                  led_fine='4', led_cloud='4',
                   led_rain='4', led_snow='4',
                   tts_button='4'),
         follow_redirects=True
@@ -62,7 +70,9 @@ def test_update_pytenki_settings_with_duplicate_values(client, login_client):
 def test_successful_pytenki_settings_update(client, login_client):
     response = client.post(
         url_for('settings.pytenki'),
-        data=dict(led_fine='4', led_cloud='17',
+        data=dict(region='1', prefecture='1',
+                  city='2', pinpoint_loc='2',
+                  led_fine='4', led_cloud='17',
                   led_rain='27', led_snow='22',
                   tts_button='2', fetch_intvl='20'),
         follow_redirects=True

@@ -5,7 +5,7 @@ from flask import flash, redirect, render_template, url_for
 from flask_login import login_required
 
 from app import db
-from app.models import Setting
+from app.models import City, PinpointLocation, Prefecture, Region, Setting
 from app.settings import bp
 from app.settings.forms import PyTenkiForm
 
@@ -51,6 +51,10 @@ def pytenki():
         led_snow=get_dict_val(gpio, ['led', 'snow']),
         tts_button=get_dict_val(gpio, ['tts_button']),
     )
+    form.region.query = Region.query
+    form.prefecture.query = Prefecture.query
+    form.city.query = City.query
+    form.pinpoint_loc.query = PinpointLocation.query
 
     if form.validate_on_submit():
         store_form_data_to_db(form)

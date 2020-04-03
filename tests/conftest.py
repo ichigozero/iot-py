@@ -4,7 +4,14 @@ import pytest
 from flask import url_for
 
 from app import create_app, db
-from app.models import User, Setting
+from app.models import (
+    City,
+    PinpointLocation,
+    Prefecture,
+    Region,
+    Setting,
+    User
+)
 from config import Config
 
 
@@ -41,6 +48,13 @@ def app_db():
     user = User(username='foo')
     user.set_password('bar')
 
+    region = Region(name='region')
+    pref = Prefecture(name='prefecture', region=region)
+    city_1 = City(id='1', name='city_1', prefecture=pref)
+    city_2 = City(id='2', name='city_2', prefecture=pref)
+    pinpoint_loc_1 = PinpointLocation(id='1', name='pinpoint_1', city=city_1)
+    pinpoint_loc_2 = PinpointLocation(id='2', name='pinpoint_2', city=city_2)
+
     setting_1 = Setting(
         app='pytenki',
         value=json.dumps({})
@@ -55,6 +69,12 @@ def app_db():
 
     db.session.add_all([
         user,
+        region,
+        pref,
+        city_1,
+        city_2,
+        pinpoint_loc_1,
+        pinpoint_loc_2,
         setting_1,
         setting_2
     ])
