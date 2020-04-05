@@ -49,15 +49,24 @@ def app_db():
     user.set_password('bar')
 
     region = Region(name='region')
-    pref = Prefecture(name='prefecture', region=region)
-    city_1 = City(id='1', name='city_1', prefecture=pref)
-    city_2 = City(id='2', name='city_2', prefecture=pref)
-    pinpoint_loc_1 = PinpointLocation(id='1', name='pinpoint_1', city=city_1)
-    pinpoint_loc_2 = PinpointLocation(id='2', name='pinpoint_2', city=city_2)
+    pref_1 = Prefecture(name='prefecture_1', region=region)
+    pref_2 = Prefecture(name='prefecture_2', region=region)
+    city_1 = City(id=1, name='city_1', prefecture=pref_1)
+    city_2 = City(id=2, name='city_2', prefecture=pref_1)
+    pinpoint_loc_1 = PinpointLocation(id=1, name='pinpoint_1', city=city_1)
+    pinpoint_loc_2 = PinpointLocation(id=2, name='pinpoint_2', city=city_2)
 
     setting_1 = Setting(
         app='pytenki',
-        value=json.dumps({})
+        value=json.dumps({
+            'fcst_area': {
+                'region_id': 1,
+                'pref_id': 1,
+                'city_id': 1,
+                'pinpoint_id': 1
+            },
+            'fetch_intvl': 35
+        })
     )
     setting_2 = Setting(
         app='gpio',
@@ -70,7 +79,8 @@ def app_db():
     db.session.add_all([
         user,
         region,
-        pref,
+        pref_1,
+        pref_2,
         city_1,
         city_2,
         pinpoint_loc_1,
