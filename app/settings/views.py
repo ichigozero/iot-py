@@ -1,7 +1,7 @@
 import operator
 from functools import reduce
 
-from flask import flash, redirect, render_template, request, url_for
+from flask import flash, jsonify, redirect, render_template, request, url_for
 from flask_login import login_required
 
 from app import db
@@ -100,3 +100,54 @@ def pytenki():
         title='PyTenki - Settings',
         form=form
     )
+
+
+@bp.route('/settings/pytenki/areas-by-region', methods=['POST'])
+@login_required
+def areas_by_region():
+    region_id = int(request.form.get('region'))
+    prefectures = Prefecture.query.filter_by(region_id=region_id)
+    cities = City.query.filter_by(pref_id=prefectures.first().id)
+    pinpoints = PinpointLocation.query.filter_by(city_id=cities.first().id)
+
+    choices = {
+        'prefectures': get_choices_of_area(prefectures),
+        'cities': get_choices_of_area(cities),
+        'pinpoints': get_choices_of_area(pinpoints)
+    }
+
+    return jsonify(choices=choices)
+
+
+@bp.route('/settings/pytenki/areas-by-prefecture', methods=['POST'])
+@login_required
+def areas_by_prefecture():
+    pref_id = int(request.form.get('prefecture'))
+    cities = City.query.filter_by(pref_id=pref_id)
+    pinpoints = PinpointLocation.query.filter_by(city_id=cities.first().id)
+
+    choices = {
+        'cities': get_choices_of_area(cities),
+        'pinpoints': get_choices_of_area(pinpoints)
+    }
+
+    return jsonify(choices=choices)
+
+
+@bp.route('/settings/pytenki/areas-by-city', methods=['POST'])
+@login_required
+def areas_by_city():
+    city_id = int(request.form.get('city'))
+    pinpoints = PinpointLocation.query.filter_by(city_id=city_id)
+    choices = {'pinpoints': get_choices_of_area(pinpoints)}
+
+    return jsonify(choices=choices)
+
+
+def get_choices_of_area(areas):
+    choices = list()
+
+    for area in areas:
+        choices.append({'value': area.id, 'text': area.name})
+
+    return choices

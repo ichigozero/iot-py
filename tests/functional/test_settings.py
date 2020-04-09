@@ -100,3 +100,66 @@ def test_successful_pytenki_settings_update(client, login_client):
     )
     for element in elements:
         assert element in response.data
+
+
+def test_fetch_areas_by_region(client, login_client):
+    response = client.post(
+        url_for('settings.areas_by_region'),
+        data=dict(region='1')
+    )
+
+    assert response.status_code == 200
+
+    expected = {
+        'prefectures': [
+            {'value': 1, 'text': 'prefecture_1'},
+            {'value': 2, 'text': 'prefecture_2'}
+        ],
+        'cities': [
+            {'value': 1, 'text': 'city_1'},
+            {'value': 2, 'text': 'city_2'}
+        ],
+        'pinpoints': [
+            {'value': 1, 'text': 'pinpoint_1'}
+        ]
+    }
+
+    assert response.json['choices'] == expected
+
+
+def test_fetch_areas_by_prefecture(client, login_client):
+    response = client.post(
+        url_for('settings.areas_by_prefecture'),
+        data=dict(prefecture='1')
+    )
+
+    assert response.status_code == 200
+
+    expected = {
+        'cities': [
+            {'value': 1, 'text': 'city_1'},
+            {'value': 2, 'text': 'city_2'}
+        ],
+        'pinpoints': [
+            {'value': 1, 'text': 'pinpoint_1'}
+        ]
+    }
+
+    assert response.json['choices'] == expected
+
+
+def test_fetch_areas_by_city(client, login_client):
+    response = client.post(
+        url_for('settings.areas_by_city'),
+        data=dict(city='1')
+    )
+
+    assert response.status_code == 200
+
+    expected = {
+        'pinpoints': [
+            {'value': 1, 'text': 'pinpoint_1'}
+        ]
+    }
+
+    assert response.json['choices'] == expected
