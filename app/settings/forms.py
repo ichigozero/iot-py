@@ -2,6 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import SelectField, SubmitField
 from wtforms.fields.html5 import IntegerRangeField
 from wtforms.validators import DataRequired
+from wtforms_alchemy.fields import QuerySelectField
 
 
 def gpio_pins():
@@ -23,7 +24,20 @@ def gpio_select_field(field_name):
     )
 
 
+def query_select_field(field_name):
+    return QuerySelectField(
+        field_name,
+        get_label='name',
+        allow_blank=True,
+        validators=[DataRequired()]
+    )
+
+
 class PyTenkiForm(FlaskForm):
+    region = query_select_field(u'Region')
+    prefecture = query_select_field(u'Prefecture')
+    city = query_select_field(u'City')
+    pinpoint_loc = query_select_field(u'Pinpoint Location')
     fetch_intvl = IntegerRangeField(u'Data Fetch Interval')
     led_fine = gpio_select_field(u'Fine')
     led_cloud = gpio_select_field(u'Cloud')

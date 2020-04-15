@@ -46,3 +46,43 @@ class Setting(db.Model):
     def update_setting(app, raw_data):
         setting = Setting.query.filter_by(app=app).first()
         setting.value = json.dumps(raw_data)
+
+
+class Region(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(32), index=True)
+    prefectures = db.relationship('Prefecture', backref='region',
+                                  lazy='dynamic')
+
+    def __repr__(self):
+        return '<Region {}>'.format(self.name)
+
+
+class Prefecture(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(32), index=True)
+    region_id = db.Column(db.Integer, db.ForeignKey('region.id'))
+    cities = db.relationship('City', backref='prefecture', lazy='dynamic')
+
+    def __repr__(self):
+        return '<Prefecture {}>'.format(self.name)
+
+
+class City(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=False)
+    name = db.Column(db.String(64), index=True)
+    pref_id = db.Column(db.Integer, db.ForeignKey('prefecture.id'))
+    pinpoints = db.relationship('PinpointLocation', backref='city',
+                                lazy='dynamic')
+
+    def __repr__(self):
+        return '<City {}>'.format(self.name)
+
+
+class PinpointLocation(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=False)
+    name = db.Column(db.String(64), index=True)
+    city_id = db.Column(db.Integer, db.ForeignKey('city.id'))
+
+    def __repr__(self):
+        return '<PinpointLocation {}>'.format(self.name)
