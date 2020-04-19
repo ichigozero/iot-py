@@ -221,30 +221,20 @@
   );
 </script>
 <script type="text/javascript" charset="utf-8">
-  function outputSliderVal(slider, value) {
-    value.innerHTML = slider.value;
+  function outputSliderVal(sliderId, outputId) {
+    const slider = document.getElementById(sliderId);
+    const output = document.getElementById(outputId);
+
+    output.innerHTML = slider.value;
     slider.oninput = function() {
-      value.innerHTML = this.value;
+      output.innerHTML = this.value;
     }
   }
-  const fetchIntvl = document.getElementById("fetch-intvl");
-  const fetchIntvlVal = document.getElementById("fetch-intvl-val");
-  outputSliderVal(fetchIntvl, fetchIntvlVal);
 
-  const blinkOn = document.getElementById("blink-on-time");
-  const blinkOnVal = document.getElementById("blink-on-time-val");
-  outputSliderVal(blinkOn, blinkOnVal);
-
-  const blinkOff = document.getElementById("blink-off-time");
-  const blinkOffVal = document.getElementById("blink-off-time-val");
-  outputSliderVal(blinkOff, blinkOffVal);
-
-  const fadeIn = document.getElementById("fade-in-time");
-  const fadeInVal = document.getElementById("fade-in-time-val");
-  outputSliderVal(fadeIn, fadeInVal);
-
-  const fadeOut = document.getElementById("fade-out-time");
-  const fadeOutVal = document.getElementById("fade-out-time-val");
-  outputSliderVal(fadeOut, fadeOutVal);
+  outputSliderVal('fetch-intvl', 'fetch-intvl-val');
+  outputSliderVal('blink-on-time', 'blink-on-time-val');
+  outputSliderVal('blink-off-time', 'blink-off-time-val');
+  outputSliderVal('fade-in-time', 'fade-in-time-val');
+  outputSliderVal('fade-out-time', 'fade-out-time-val');
 </script>
 {% endblock %}
