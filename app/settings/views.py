@@ -21,6 +21,10 @@ def store_form_data_to_db(form):
                 'pinpoint_id': form.pinpoint_loc.data.id
             },
             'fetch_intvl': form.fetch_intvl.data,
+            'led_duration': {
+                'blink_on_time': form.blink_on_time.data,
+                'blink_off_time': form.blink_off_time.data,
+            },
         }
     )
     Setting.update_setting(
@@ -61,6 +65,10 @@ def pytenki():
         city=City.query.get(city_id_old),
         pinpoint_loc=PinpointLocation.query.get(pinpoint_id_old),
         fetch_intvl=get_dict_val(pytenki, ['fetch_intvl']) or 35,
+        blink_on_time=get_dict_val(
+            pytenki, ['led_duration', 'blink_on_time']) or 3.0,
+        blink_off_time=get_dict_val(
+            pytenki, ['led_duration', 'blink_off_time']) or 2.0,
         led_fine=get_dict_val(gpio, ['led', 'fine']),
         led_cloud=get_dict_val(gpio, ['led', 'cloud']),
         led_rain=get_dict_val(gpio, ['led', 'rain']),
