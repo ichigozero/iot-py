@@ -15,4 +15,14 @@ function updateDropdown(elementId, choices) {
   });
 }
 
-export {updateDropdown};
+function outputSliderVal(sliderId, outputId) {
+  const slider = document.getElementById(sliderId);
+  const output = document.getElementById(outputId);
+
+  output.innerHTML = slider.value;
+  slider.oninput = function() {
+    output.innerHTML = this.value;
+  };
+}
+
+export {outputSliderVal, updateDropdown};

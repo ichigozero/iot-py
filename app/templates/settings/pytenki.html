@@ -219,18 +219,9 @@
     '{{ url_for('settings.areas_by_prefecture') }}',
     '{{ url_for('settings.areas_by_city') }}',
   );
-</script>
-<script type="text/javascript" charset="utf-8">
-  function outputSliderVal(sliderId, outputId) {
-    const slider = document.getElementById(sliderId);
-    const output = document.getElementById(outputId);
 
-    output.innerHTML = slider.value;
-    slider.oninput = function() {
-      output.innerHTML = this.value;
-    }
-  }
-
+  import {outputSliderVal}
+  from '{{ url_for('static', filename='helper.js') }}';
   outputSliderVal('fetch-intvl', 'fetch-intvl-val');
   outputSliderVal('blink-on-time', 'blink-on-time-val');
   outputSliderVal('blink-off-time', 'blink-off-time-val');
