@@ -74,15 +74,20 @@ def pytenki():
         or Region.query.first().id
     )
 
+    pref_id = request.form.get('prefecture')
+
     if region_id == region_id_old:
-        pref_id = request.form.get('prefecture') or pref_id_old
+        pref_id = pref_id or pref_id_old
     else:
-        pref_id = Prefecture.query.filter_by(region_id=region_id).first().id
+        pref_id = pref_id or Prefecture.query.filter_by(
+            region_id=region_id).first().id
+
+    city_id = request.form.get('city')
 
     if pref_id == pref_id_old:
-        city_id = request.form.get('city') or city_id_old
+        city_id = city_id or city_id_old
     else:
-        city_id = City.query.filter_by(pref_id=pref_id).first().id
+        city_id = city_id or City.query.filter_by(pref_id=pref_id).first().id
 
     form.region.query = Region.query
     form.prefecture.query = Prefecture.query.filter_by(region_id=region_id)
@@ -146,6 +151,7 @@ def areas_by_city():
 
 def get_choices_of_area(areas):
     choices = list()
+    choices.append({'value': '__None', 'text': ''})
 
     for area in areas:
         choices.append({'value': area.id, 'text': area.name})

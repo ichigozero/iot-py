@@ -157,6 +157,15 @@
 {% endblock %}
 
 {% block script %}
+<script type="module">
+  import {updateForecastAreaDropdowns}
+  from '{{ url_for('static', filename='pytenki-settings.js') }}';
+  updateForecastAreaDropdowns(
+    '{{ url_for('settings.areas_by_region') }}',
+    '{{ url_for('settings.areas_by_prefecture') }}',
+    '{{ url_for('settings.areas_by_city') }}',
+  );
+</script>
 <script type="text/javascript" charset="utf-8">
   let slider = document.getElementById("range-input");
   let output = document.getElementById("range-input-val");
