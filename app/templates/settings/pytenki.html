@@ -68,10 +68,10 @@
     <div class="card mt-4">
       <div class="card-header">Data Fetch Interval</div>
       <div class="card-body text-center">
-        {{ form.fetch_intvl(id="range-input", class_="custom-range",
+        {{ form.fetch_intvl(id="fetch-intvl", class_="custom-range",
                             min=10, max=60, step=5) }}
         <output>
-          <span id="range-input-val"></span>
+          <span id="fetch-intvl-val"></span>
           <span> minutes</span>
         </output>
       </div>
@@ -167,12 +167,14 @@
   );
 </script>
 <script type="text/javascript" charset="utf-8">
-  let slider = document.getElementById("range-input");
-  let output = document.getElementById("range-input-val");
-  output.innerHTML = slider.value;
-
-  slider.oninput = function() {
-    output.innerHTML = this.value;
+  function outputSliderVal(slider, value) {
+    value.innerHTML = slider.value;
+    slider.oninput = function() {
+      value.innerHTML = this.value;
+    }
   }
+  const fetchIntvl = document.getElementById("fetch-intvl");
+  const fetchIntvlVal = document.getElementById("fetch-intvl-val");
+  outputSliderVal(fetchIntvl, fetchIntvlVal);
 </script>
 {% endblock %}
