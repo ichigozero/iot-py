@@ -68,6 +68,8 @@ def app_db():
             'led_duration': {
                 'blink_on_time': 1.0,
                 'blink_off_time': 1.0,
+                'fade_in_time': 1.0,
+                'fade_out_time': 1.0,
             },
         })
     )

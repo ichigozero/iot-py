@@ -41,6 +41,8 @@ class PyTenkiForm(FlaskForm):
     fetch_intvl = IntegerRangeField(u'Data Fetch Interval')
     blink_on_time = DecimalRangeField(u'On Time', places=1)
     blink_off_time = DecimalRangeField(u'Off Time', places=1)
+    fade_in_time = DecimalRangeField(u'Fade In Time', places=1)
+    fade_out_time = DecimalRangeField(u'Fade Out Time', places=1)
     led_fine = gpio_select_field(u'Fine')
     led_cloud = gpio_select_field(u'Cloud')
     led_rain = gpio_select_field(u'Rain')

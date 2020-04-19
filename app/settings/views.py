@@ -24,6 +24,8 @@ def store_form_data_to_db(form):
             'led_duration': {
                 'blink_on_time': form.blink_on_time.data,
                 'blink_off_time': form.blink_off_time.data,
+                'fade_in_time': form.fade_in_time.data,
+                'fade_out_time': form.fade_out_time.data,
             },
         }
     )
@@ -69,6 +71,10 @@ def pytenki():
             pytenki, ['led_duration', 'blink_on_time']) or 3.0,
         blink_off_time=get_dict_val(
             pytenki, ['led_duration', 'blink_off_time']) or 2.0,
+        fade_in_time=get_dict_val(
+            pytenki, ['led_duration', 'fade_in_time']) or 3.0,
+        fade_out_time=get_dict_val(
+            pytenki, ['led_duration', 'fade_out_time']) or 2.0,
         led_fine=get_dict_val(gpio, ['led', 'fine']),
         led_cloud=get_dict_val(gpio, ['led', 'cloud']),
         led_rain=get_dict_val(gpio, ['led', 'rain']),
