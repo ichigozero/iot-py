@@ -68,10 +68,10 @@
     <div class="card mt-4">
       <div class="card-header">Data Fetch Interval</div>
       <div class="card-body text-center">
-        {{ form.fetch_intvl(id="range-input", class_="custom-range",
+        {{ form.fetch_intvl(id="fetch-intvl", class_="custom-range",
                             min=10, max=60, step=5) }}
         <output>
-          <span id="range-input-val"></span>
+          <span id="fetch-intvl-val"></span>
           <span> minutes</span>
         </output>
       </div>
@@ -133,6 +133,60 @@
         </div>
       </div>
     </div>
+    <div class="card mt-4">
+      <div class="card-header">LED Blink Duration</div>
+      <div class="card-body">
+        <div class="form-group row">
+          {{ form.blink_on_time.label(class_="col-lg-2 col-form-label") }}
+          <div class="col-lg-10">
+            {{ form.blink_on_time(id="blink-on-time", class_="custom-range",
+                                  min=1.0, max=5.0, step=0.5) }}
+            <output>
+              <span id="blink-on-time-val"></span>
+              <span> seconds</span>
+            </output>
+          </div>
+        </div>
+        <div class="form-group row">
+          {{ form.blink_off_time.label(class_="col-lg-2 col-form-label") }}
+          <div class="col-lg-10">
+            {{ form.blink_off_time(id="blink-off-time", class_="custom-range",
+                                   min=1.0, max=5.0, step=0.5) }}
+            <output>
+              <span id="blink-off-time-val"></span>
+              <span> seconds</span>
+            </output>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card mt-4">
+      <div class="card-header">LED Fade Duration</div>
+      <div class="card-body">
+        <div class="form-group row">
+          {{ form.fade_in_time.label(class_="col-lg-2 col-form-label") }}
+          <div class="col-lg-10">
+            {{ form.fade_in_time(id="fade-in-time", class_="custom-range",
+                                  min=1.0, max=5.0, step=0.5) }}
+            <output>
+              <span id="fade-in-time-val"></span>
+              <span> seconds</span>
+            </output>
+          </div>
+        </div>
+        <div class="form-group row">
+          {{ form.fade_out_time.label(class_="col-lg-2 col-form-label") }}
+          <div class="col-lg-10">
+            {{ form.fade_out_time(id="fade-out-time", class_="custom-range",
+                                   min=1.0, max=5.0, step=0.5) }}
+            <output>
+              <span id="fade-out-time-val"></span>
+              <span> seconds</span>
+            </output>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="card mt-4 mb-4">
       <div class="card-header">Button</div>
       <div class="card-body">
@@ -157,13 +211,21 @@
 {% endblock %}
 
 {% block script %}
-<script type="text/javascript" charset="utf-8">
-  let slider = document.getElementById("range-input");
-  let output = document.getElementById("range-input-val");
-  output.innerHTML = slider.value;
+<script type="module">
+  import {updateForecastAreaDropdowns}
+  from '{{ url_for('static', filename='pytenki-settings.js') }}';
+  updateForecastAreaDropdowns(
+    '{{ url_for('settings.areas_by_region') }}',
+    '{{ url_for('settings.areas_by_prefecture') }}',
+    '{{ url_for('settings.areas_by_city') }}',
+  );
 
-  slider.oninput = function() {
-    output.innerHTML = this.value;
-  }
+  import {outputSliderVal}
+  from '{{ url_for('static', filename='helper.js') }}';
+  outputSliderVal('fetch-intvl', 'fetch-intvl-val');
+  outputSliderVal('blink-on-time', 'blink-on-time-val');
+  outputSliderVal('blink-off-time', 'blink-off-time-val');
+  outputSliderVal('fade-in-time', 'fade-in-time-val');
+  outputSliderVal('fade-out-time', 'fade-out-time-val');
 </script>
 {% endblock %}

@@ -21,6 +21,12 @@ def store_form_data_to_db(form):
                 'pinpoint_id': form.pinpoint_loc.data.id
             },
             'fetch_intvl': form.fetch_intvl.data,
+            'led_duration': {
+                'blink_on_time': form.blink_on_time.data,
+                'blink_off_time': form.blink_off_time.data,
+                'fade_in_time': form.fade_in_time.data,
+                'fade_out_time': form.fade_out_time.data,
+            },
         }
     )
     Setting.update_setting(
@@ -61,6 +67,14 @@ def pytenki():
         city=City.query.get(city_id_old),
         pinpoint_loc=PinpointLocation.query.get(pinpoint_id_old),
         fetch_intvl=get_dict_val(pytenki, ['fetch_intvl']) or 35,
+        blink_on_time=get_dict_val(
+            pytenki, ['led_duration', 'blink_on_time']) or 3.0,
+        blink_off_time=get_dict_val(
+            pytenki, ['led_duration', 'blink_off_time']) or 2.0,
+        fade_in_time=get_dict_val(
+            pytenki, ['led_duration', 'fade_in_time']) or 3.0,
+        fade_out_time=get_dict_val(
+            pytenki, ['led_duration', 'fade_out_time']) or 2.0,
         led_fine=get_dict_val(gpio, ['led', 'fine']),
         led_cloud=get_dict_val(gpio, ['led', 'cloud']),
         led_rain=get_dict_val(gpio, ['led', 'rain']),
@@ -74,15 +88,20 @@ def pytenki():
         or Region.query.first().id
     )
 
+    pref_id = request.form.get('prefecture')
+
     if region_id == region_id_old:
-        pref_id = request.form.get('prefecture') or pref_id_old
+        pref_id = pref_id or pref_id_old
     else:
-        pref_id = Prefecture.query.filter_by(region_id=region_id).first().id
+        pref_id = pref_id or Prefecture.query.filter_by(
+            region_id=region_id).first().id
+
+    city_id = request.form.get('city')
 
     if pref_id == pref_id_old:
-        city_id = request.form.get('city') or city_id_old
+        city_id = city_id or city_id_old
     else:
-        city_id = City.query.filter_by(pref_id=pref_id).first().id
+        city_id = city_id or City.query.filter_by(pref_id=pref_id).first().id
 
     form.region.query = Region.query
     form.prefecture.query = Prefecture.query.filter_by(region_id=region_id)
@@ -146,6 +165,7 @@ def areas_by_city():
 
 def get_choices_of_area(areas):
     choices = list()
+    choices.append({'value': '__None', 'text': ''})
 
     for area in areas:
         choices.append({'value': area.id, 'text': area.name})

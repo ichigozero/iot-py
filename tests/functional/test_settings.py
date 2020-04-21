@@ -15,6 +15,10 @@ def test_fetch_pytenki_settings_page(client, login_client):
         b'<option value="2">city_2</option>',
         b'<option selected value="1">pinpoint_1</option>',
         b'name="fetch_intvl" step="5" type="range" value="35"',
+        b'name="blink_on_time" step="0.5" type="range" value="1.0"',
+        b'name="blink_off_time" step="0.5" type="range" value="1.0"',
+        b'name="fade_in_time" step="0.5" type="range" value="1.0"',
+        b'name="fade_out_time" step="0.5" type="range" value="1.0"',
         b'<option selected value="2">',
         b'<option selected value="3">',
         b'<option selected value="4">',
@@ -79,7 +83,9 @@ def test_successful_pytenki_settings_update(client, login_client):
                   city='2', pinpoint_loc='2',
                   led_fine='4', led_cloud='17',
                   led_rain='27', led_snow='22',
-                  tts_button='2', fetch_intvl='20'),
+                  tts_button='2', fetch_intvl='20',
+                  blink_on_time='3.0', blink_off_time='2.0',
+                  fade_in_time='3.0', fade_out_time='2.0'),
         follow_redirects=True
     )
 
@@ -92,6 +98,10 @@ def test_successful_pytenki_settings_update(client, login_client):
         b'<option selected value="2">city_2</option>',
         b'<option selected value="2">pinpoint_2</option>',
         b'name="fetch_intvl" step="5" type="range" value="20"',
+        b'name="blink_on_time" step="0.5" type="range" value="3.0"',
+        b'name="blink_off_time" step="0.5" type="range" value="2.0"',
+        b'name="fade_in_time" step="0.5" type="range" value="3.0"',
+        b'name="fade_out_time" step="0.5" type="range" value="2.0"',
         b'<option selected value="4">',
         b'<option selected value="17">',
         b'<option selected value="27">',
@@ -112,14 +122,17 @@ def test_fetch_areas_by_region(client, login_client):
 
     expected = {
         'prefectures': [
+            {'value': '__None', 'text': ''},
             {'value': 1, 'text': 'prefecture_1'},
             {'value': 2, 'text': 'prefecture_2'}
         ],
         'cities': [
+            {'value': '__None', 'text': ''},
             {'value': 1, 'text': 'city_1'},
             {'value': 2, 'text': 'city_2'}
         ],
         'pinpoints': [
+            {'value': '__None', 'text': ''},
             {'value': 1, 'text': 'pinpoint_1'}
         ]
     }
@@ -137,10 +150,12 @@ def test_fetch_areas_by_prefecture(client, login_client):
 
     expected = {
         'cities': [
+            {'value': '__None', 'text': ''},
             {'value': 1, 'text': 'city_1'},
             {'value': 2, 'text': 'city_2'}
         ],
         'pinpoints': [
+            {'value': '__None', 'text': ''},
             {'value': 1, 'text': 'pinpoint_1'}
         ]
     }
@@ -158,6 +173,7 @@ def test_fetch_areas_by_city(client, login_client):
 
     expected = {
         'pinpoints': [
+            {'value': '__None', 'text': ''},
             {'value': 1, 'text': 'pinpoint_1'}
         ]
     }

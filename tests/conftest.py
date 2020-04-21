@@ -1,6 +1,5 @@
-import json
-
 import pytest
+import simplejson as json
 from flask import url_for
 
 from app import create_app, db
@@ -65,7 +64,13 @@ def app_db():
                 'city_id': 1,
                 'pinpoint_id': 1
             },
-            'fetch_intvl': 35
+            'fetch_intvl': 35,
+            'led_duration': {
+                'blink_on_time': 1.0,
+                'blink_off_time': 1.0,
+                'fade_in_time': 1.0,
+                'fade_out_time': 1.0,
+            },
         })
     )
     setting_2 = Setting(
