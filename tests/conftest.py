@@ -22,27 +22,8 @@ class TestConfig(Config):
     HASH_ROUNDS = 1
 
 
-@pytest.fixture(scope='module')
-def client():
-    app = create_app(TestConfig)
-
-    with app.app_context():
-        app.test_request_context().push()
-        yield app.test_client()
-
-
-@pytest.fixture(scope='function')
-def login_client(client, app_db):
-    with client:
-        yield client.post(
-            url_for('auth.login'),
-            data=dict(username='foo', password='bar'),
-            follow_redirects=True
-        )
-
-
-@pytest.fixture(scope='function')
-def pytenki_task(mocker, client, app_db):
+@pytest.fixture
+def client(mocker):
     class MockForecastSummary:
         def fetch_weather_data(self, city_id):
             pass
@@ -87,7 +68,30 @@ def pytenki_task(mocker, client, app_db):
                  return_value=MockForecastSummary())
     mocker.patch('tenkihaxjp.ForecastDetails',
                  return_value=MockForecastDetails())
+    pytenki_task = PyTenkiTask()
+    mocker.patch('app.tasks.PyTenkiTask',
+                 return_value=pytenki_task)
 
+    app = create_app(TestConfig)
+
+    with app.app_context():
+        app.test_request_context().push()
+        yield app.test_client()
+        pytenki_task.exit_thread.set()
+
+
+@pytest.fixture(scope='function')
+def login_client(client, app_db):
+    with client:
+        yield client.post(
+            url_for('auth.login'),
+            data=dict(username='foo', password='bar'),
+            follow_redirects=True
+        )
+
+
+@pytest.fixture(scope='function')
+def pytenki_task(mocker, client, app_db):
     pytenki_task = PyTenkiTask()
     yield pytenki_task
     pytenki_task.exit_thread.set()

@@ -58,9 +58,9 @@ class PyTenkiTask(BackgroundTask):
 
     @wait_event
     def _fetch_data(self):
-        city_id = get_dict_val(self.settings, ['fcast_area', 'city_id'])
+        city_id = get_dict_val(self.settings, ['fcst_area', 'city_id'])
         pinpoint_id = get_dict_val(self.settings,
-                                   ['fcast_area', 'pinpoint_id'])
+                                   ['fcst_area', 'pinpoint_id'])
 
         self.fcast_summary.fetch_weather_data(city_id)
         self.fcast_details.fetch_parse_html_source(pinpoint_id)
