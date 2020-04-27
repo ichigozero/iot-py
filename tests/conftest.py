@@ -11,6 +11,7 @@ from app.models import (
     Setting,
     User
 )
+from app.tasks import PyTenkiTask
 from config import Config
 
 
@@ -38,6 +39,58 @@ def login_client(client, app_db):
             data=dict(username='foo', password='bar'),
             follow_redirects=True
         )
+
+
+@pytest.fixture(scope='function')
+def pytenki_task(mocker, client, app_db):
+    class MockForecastSummary:
+        def fetch_weather_data(self, city_id):
+            pass
+
+        def get_city(self):
+            return 'Tokyo'
+
+        def get_summary(self, period=''):
+            summary = {
+                'day': 'Today',
+                'city': self.get_city(),
+                'weather': 'Fine',
+                'temp': {'max': 1, 'min': 0}
+            }
+
+            if period:
+                summary['day'] = 'Tomorrow'
+
+            return summary
+
+    class MockForecastDetails:
+        def fetch_parse_html_source(self, pinpoint_id):
+            pass
+
+        def get_pinpoint_loc_name(self):
+            return 'Minato-ku'
+
+        def get_3_hourly_forecasts_for_next_24_hours(self):
+            return [
+                {'time': '9',  'temp': '', 'weather': ''},
+                {'time': '12', 'temp': '', 'weather': ''},
+                {'time': '15', 'temp': '', 'weather': ''},
+                {'time': '18', 'temp': '', 'weather': ''},
+                {'time': '21', 'temp': '', 'weather': ''},
+                {'time': '0',  'temp': '', 'weather': ''},
+                {'time': '3',  'temp': '', 'weather': ''},
+                {'time': '6',  'temp': '', 'weather': ''},
+                {'time': '9',  'temp': '', 'weather': ''}
+            ]
+
+    mocker.patch('tenkihaxjp.ForecastSummary',
+                 return_value=MockForecastSummary())
+    mocker.patch('tenkihaxjp.ForecastDetails',
+                 return_value=MockForecastDetails())
+
+    pytenki_task = PyTenkiTask()
+    yield pytenki_task
+    pytenki_task.exit_thread.set()
 
 
 @pytest.fixture(scope='function')

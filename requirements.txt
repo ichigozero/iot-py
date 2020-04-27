@@ -25,6 +25,7 @@ pluggy==0.13.1
 py==1.8.1
 pyparsing==2.4.6
 pytest==5.4.1
+pytest-mock==3.1.0
 python-dateutil==2.8.1
 python-dotenv==0.12.0
 python-editor==1.0.4
@@ -34,7 +35,7 @@ six==1.14.0
 soupsieve==2.0
 SQLAlchemy==1.3.15
 SQLAlchemy-Utils==0.36.3
--e git+git@github.com:chobaikin/tenkihaxjp.git@171dbd67434226b57e7627ec7ff3c070e49cb075#egg=tenkihaxjp
+tenkihaxjp==0.0.0
 urllib3==1.25.9
 validators==0.14.3
 wcwidth==0.1.8
