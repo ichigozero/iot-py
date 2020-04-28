@@ -1,6 +1,7 @@
 from flask import flash, jsonify, redirect, render_template, request, url_for
 from flask_login import login_required
 
+import app
 from app import db
 from app.helper import get_dict_val
 from app.models import City, PinpointLocation, Prefecture, Region, Setting
@@ -102,6 +103,10 @@ def pytenki():
     if form.validate_on_submit():
         store_form_data_to_db(form)
         db.session.commit()
+
+        app.pytenki_task.init_task()
+        app.pytenki_task.restart()
+
         flash('PyTenki Settings Have Been Updated Successfully', 'success')
         return redirect(url_for('settings.pytenki'))
 

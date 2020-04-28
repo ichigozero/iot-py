@@ -76,7 +76,12 @@ def test_update_pytenki_settings_with_duplicate_values(client, login_client):
         assert element in response.data
 
 
-def test_successful_pytenki_settings_update(client, login_client):
+def test_successful_pytenki_settings_update(mocker, client, login_client):
+    import app
+
+    spy_init_task = mocker.spy(app.pytenki_task, 'init_task')
+    spy_restart = mocker.spy(app.pytenki_task, 'restart')
+
     response = client.post(
         url_for('settings.pytenki'),
         data=dict(region='1', prefecture='1',
@@ -88,6 +93,9 @@ def test_successful_pytenki_settings_update(client, login_client):
                   fade_in_time='3.0', fade_out_time='2.0'),
         follow_redirects=True
     )
+
+    spy_init_task.assert_called_once()
+    spy_restart.assert_called_once()
 
     assert response.status_code == 200
     elements = (
