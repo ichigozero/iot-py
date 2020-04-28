@@ -6,6 +6,7 @@ def test_fetch_index_page(client, app_db):
     assert response.status_code == 200
 
     elements = (
+        b'<span id="forecast-loc">(Tokyo/Minato-ku)</span>',
         b'<td id="today-weather">',
         b'Fine',
         b'<td id="hour-1">9</td>',
