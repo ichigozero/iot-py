@@ -5,7 +5,12 @@ def test_init_task(pytenki_task):
     assert pytenki_task.wait_time == 35 * SECONDS_IN_MIN
 
 
-def test_get_fetched_data(pytenki_task):
+def test_get_fetched_data(mocker, pytenki_task):
+    spy_summary = mocker.spy(pytenki_task.fcast_summary,
+                             'fetch_weather_data')
+    spy_details = mocker.spy(pytenki_task.fcast_details,
+                             'fetch_parse_html_source')
+
     pytenki_task.init_task()
     pytenki_task.start()
 
@@ -38,4 +43,6 @@ def test_get_fetched_data(pytenki_task):
         'fcast_loc': '(Tokyo/Minato-ku)'
     }
 
+    spy_summary.assert_called_once_with(1)
+    spy_details.assert_called_once_with(1)
     assert pytenki_task.get_fetched_data() == expected
