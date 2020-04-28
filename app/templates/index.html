@@ -9,7 +9,7 @@
       <div class="card border-primary">
         <div
           class="card-header text-white text-center bg-primary"
-        >天気予報<span id="forecast-loc">{{ fcast_loc }}</span></div>
+        >天気予報<span id="forecast-loc">{{ weather_loc }}</span></div>
         <div class="card-body">
           <div class="row table-responsive">
             <table class="table table-bordered">
@@ -78,4 +78,12 @@
     </div>
   </div>
 </div>
+{% endblock %}
+
+{% block script %}
+<script type="module">
+  import {sse}
+  from '{{ url_for('static', filename='sse.js') }}';
+  sse('{{ url_for('sse.stream') }}');
+</script>
 {% endblock %}

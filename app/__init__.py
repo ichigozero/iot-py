@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_login import LoginManager
 from flask_migrate import Migrate
+from flask_sse import sse
 from flask_sqlalchemy import SQLAlchemy
 
 from config import Config
@@ -31,6 +32,8 @@ def create_app(class_config=Config):
 
     from app.cli import bp as cli_bp
     app.register_blueprint(cli_bp)
+
+    app.register_blueprint(sse, url_prefix='/stream')
 
     return app
 

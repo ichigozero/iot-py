@@ -10,6 +10,8 @@ def test_get_fetched_data(mocker, pytenki_task):
                              'fetch_weather_data')
     spy_details = mocker.spy(pytenki_task.fcast_details,
                              'fetch_parse_html_source')
+    from flask_sse import sse
+    spy_sse = mocker.spy(sse, 'publish')
 
     pytenki_task.init_task()
     pytenki_task.start()
@@ -45,4 +47,6 @@ def test_get_fetched_data(mocker, pytenki_task):
 
     spy_summary.assert_called_once_with(1)
     spy_details.assert_called_once_with(1)
+    spy_sse.assert_called_once_with(pytenki_task.get_fetched_data(),
+                                    type='pytenki')
     assert pytenki_task.get_fetched_data() == expected

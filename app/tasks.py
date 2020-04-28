@@ -2,6 +2,7 @@ import functools
 import threading
 
 import tenkihaxjp
+from flask_sse import sse
 
 from app.models import Setting
 from app.helper import get_dict_val
@@ -64,6 +65,12 @@ class PyTenkiTask(BackgroundTask):
 
         self.fcast_summary.fetch_weather_data(city_id)
         self.fcast_details.fetch_parse_html_source(pinpoint_id)
+
+        from app import create_app
+
+        app = create_app()
+        with app.app_context():
+            sse.publish(self.get_fetched_data(), type='pytenki')
 
     def get_fetched_data(self):
         fcast_loc = '/'.join(
