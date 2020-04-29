@@ -25,7 +25,7 @@ class TestConfig(Config):
 
 
 @pytest.fixture
-def client(mocker):
+def app(mocker):
     class MockForecastSummary:
         def fetch_weather_data(self, city_id):
             pass
@@ -73,21 +73,26 @@ def client(mocker):
 
     Device.pin_factory = MockFactory()
 
-    pytenki_task = PyTenkiTask()
-    mocker.patch('app.tasks.PyTenkiTask',
-                 return_value=pytenki_task)
-
     app = create_app(TestConfig)
 
     with app.app_context():
         app.test_request_context().push()
-        yield app.test_client()
-        pytenki_task.exit_thread.set()
-        pytenki_task.pytenki._close_button()
+        yield app
 
 
-@pytest.fixture(scope='function')
-def login_client(client, app_db):
+@pytest.fixture
+def client(mocker, app, app_db):
+    pytenki_task = PyTenkiTask()
+    mocker.patch('app.tasks.PyTenkiTask',
+                 return_value=pytenki_task)
+
+    yield app.test_client()
+    pytenki_task.exit_thread.set()
+    pytenki_task.pytenki._close_button()
+
+
+@pytest.fixture
+def login_client(client):
     with client:
         yield client.post(
             url_for('auth.login'),
@@ -96,15 +101,15 @@ def login_client(client, app_db):
         )
 
 
-@pytest.fixture(scope='function')
-def pytenki_task(client, app_db):
+@pytest.fixture
+def pytenki_task(app, app_db):
     pytenki_task = PyTenkiTask()
     yield pytenki_task
     pytenki_task.exit_thread.set()
     pytenki_task.pytenki._close_button()
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture
 def app_db():
     db.create_all()
 
@@ -163,8 +168,6 @@ def app_db():
         setting_2
     ])
     db.session.commit()
-
     yield db
-
     db.session.remove()
     db.drop_all()

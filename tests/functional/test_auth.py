@@ -2,7 +2,7 @@ from flask import request, url_for
 from flask_login import current_user
 
 
-def test_fetch_login_page(client, app_db):
+def test_fetch_login_page(client):
     response = client.get(url_for('auth.login'))
 
     assert response.status_code == 200
@@ -11,7 +11,7 @@ def test_fetch_login_page(client, app_db):
         assert element in response.data
 
 
-def test_invalid_user_login(client, app_db):
+def test_invalid_user_login(client):
     response = client.post(
         url_for('auth.login'),
         data=dict(username='foo', password='foo'),
