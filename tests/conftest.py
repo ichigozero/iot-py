@@ -1,6 +1,8 @@
 import pytest
 import simplejson as json
 from flask import url_for
+from gpiozero.pins.mock import MockFactory
+from gpiozero import Device
 
 from app import create_app, db
 from app.models import (
@@ -68,6 +70,9 @@ def client(mocker):
                  return_value=MockForecastSummary())
     mocker.patch('tenkihaxjp.ForecastDetails',
                  return_value=MockForecastDetails())
+
+    Device.pin_factory = MockFactory()
+
     pytenki_task = PyTenkiTask()
     mocker.patch('app.tasks.PyTenkiTask',
                  return_value=pytenki_task)
@@ -78,6 +83,7 @@ def client(mocker):
         app.test_request_context().push()
         yield app.test_client()
         pytenki_task.exit_thread.set()
+        pytenki_task.pytenki._close_button()
 
 
 @pytest.fixture(scope='function')
@@ -91,10 +97,11 @@ def login_client(client, app_db):
 
 
 @pytest.fixture(scope='function')
-def pytenki_task(mocker, client, app_db):
+def pytenki_task(client, app_db):
     pytenki_task = PyTenkiTask()
     yield pytenki_task
     pytenki_task.exit_thread.set()
+    pytenki_task.pytenki._close_button()
 
 
 @pytest.fixture(scope='function')
@@ -133,7 +140,12 @@ def app_db():
     setting_2 = Setting(
         app='gpio',
         value=json.dumps({
-            'led': {'fine': '2', 'cloud': '3'},
+            'led': {
+                'fine': '2',
+                'cloud': '3',
+                'rain': '5',
+                'snow': '6'
+            },
             'tts_button': '4'
         })
     )

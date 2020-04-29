@@ -1,8 +1,19 @@
-def test_init_task(pytenki_task):
+def test_init_task(mocker, pytenki_task):
     SECONDS_IN_MIN = 60
+
+    spy_assign_leds = mocker.spy(pytenki_task.pytenki, 'assign_leds')
+    spy_assign_btn = mocker.spy(pytenki_task.pytenki, 'assign_button')
+
     pytenki_task.init_task()
+
     assert pytenki_task.settings is not None
     assert pytenki_task.wait_time == 35 * SECONDS_IN_MIN
+
+    spy_assign_leds.assert_called_once_with({
+        'fine': '2', 'cloud': '3',
+        'rain': '5', 'snow': '6'
+    })
+    spy_assign_btn.assert_called_once_with('4')
 
 
 def test_get_fetched_data(mocker, pytenki_task):
@@ -10,6 +21,11 @@ def test_get_fetched_data(mocker, pytenki_task):
                              'fetch_weather_data')
     spy_details = mocker.spy(pytenki_task.fcast_details,
                              'fetch_parse_html_source')
+    spy_leds = mocker.spy(pytenki_task.pytenki,
+                          'operate_all_weather_leds')
+    spy_button = mocker.spy(pytenki_task.pytenki,
+                            'tts_forecast_summary_after_button_press')
+
     from flask_sse import sse
     spy_sse = mocker.spy(sse, 'publish')
 
@@ -49,4 +65,7 @@ def test_get_fetched_data(mocker, pytenki_task):
     spy_details.assert_called_once_with(1)
     spy_sse.assert_called_once_with(pytenki_task.get_fetched_data(),
                                     type='pytenki')
+    spy_leds.assert_called_once_with(on_time=1.0, off_time=1.0,
+                                     fade_in_time=1.0, fade_out_time=1.0)
+    spy_button.assert_called_once()
     assert pytenki_task.get_fetched_data() == expected

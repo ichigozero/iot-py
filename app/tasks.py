@@ -3,6 +3,7 @@ import threading
 
 import tenkihaxjp
 from flask_sse import sse
+from pytenki import PyTenki
 
 from app.models import Setting
 from app.helper import get_dict_val
@@ -49,13 +50,25 @@ class PyTenkiTask(BackgroundTask):
         super().__init__()
         self.fcast_summary = tenkihaxjp.ForecastSummary()
         self.fcast_details = tenkihaxjp.ForecastDetails()
+        self.pytenki = PyTenki()
         self.settings = None
 
     def init_task(self):
         SECONDS_IN_MIN = 60
         self.settings = Setting.load_setting('pytenki')
+        gpio = Setting.load_setting('gpio')
+
         fetch_intvl = get_dict_val(self.settings, ['fetch_intvl']) or 35
         self.wait_time = fetch_intvl * SECONDS_IN_MIN
+
+        self.pytenki._close_leds()
+        self.pytenki._close_button()
+
+        led_pins = get_dict_val(gpio, ['led'])
+        self.pytenki.assign_leds(led_pins)
+
+        button_pin = get_dict_val(gpio, ['tts_button'])
+        self.pytenki.assign_button(button_pin)
 
     @wait_event
     def _fetch_data(self):
@@ -65,6 +78,19 @@ class PyTenkiTask(BackgroundTask):
 
         self.fcast_summary.fetch_weather_data(city_id)
         self.fcast_details.fetch_parse_html_source(pinpoint_id)
+
+        self.pytenki.forecast = self.fcast_summary.get_summary()
+        self.pytenki.operate_all_weather_leds(
+            on_time=get_dict_val(
+                self.settings, ['led_duration', 'blink_on_time']),
+            off_time=get_dict_val(
+                self.settings, ['led_duration', 'blink_off_time']),
+            fade_in_time=get_dict_val(
+                self.settings, ['led_duration', 'fade_in_time']),
+            fade_out_time=get_dict_val(
+                self.settings, ['led_duration', 'fade_in_time'])
+        )
+        self.pytenki.tts_forecast_summary_after_button_press()
 
         from app import create_app
 
