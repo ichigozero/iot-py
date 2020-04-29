@@ -2,7 +2,7 @@ from app.models import City, PinpointLocation, Prefecture
 from app.settings.views import get_choices_of_area
 
 
-def test_get_choices_of_prefectures(client, app_db):
+def test_get_choices_of_prefectures(client):
     expected = [
         {'value': '__None', 'text': ''},
         {'value': 1, 'text': 'prefecture_1'},
@@ -12,7 +12,7 @@ def test_get_choices_of_prefectures(client, app_db):
     assert output == expected
 
 
-def test_get_choices_of_city(client, app_db):
+def test_get_choices_of_city(client):
     expected = [
         {'value': '__None', 'text': ''},
         {'value': 1, 'text': 'city_1'},
@@ -22,7 +22,7 @@ def test_get_choices_of_city(client, app_db):
     assert output == expected
 
 
-def test_get_choices_of_pinpoint_loc(client, app_db):
+def test_get_choices_of_pinpoint_loc(client):
     expected = [
         {'value': '__None', 'text': ''},
         {'value': 1, 'text': 'pinpoint_1'}

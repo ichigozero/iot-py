@@ -11,7 +11,7 @@ def test_fetch_login_page(client):
         assert element in response.data
 
 
-def test_invalid_user_login(client, app_db):
+def test_invalid_user_login(client):
     response = client.post(
         url_for('auth.login'),
         data=dict(username='foo', password='foo'),

@@ -4,6 +4,86 @@
 {% block content %}
 {{ navbar(current_user) }}
 <div class="container my-5">
-  <p>Hello World!</p>
+  <div class="row">
+    <div class="col">
+      <div class="card border-primary">
+        <div
+          class="card-header text-white text-center bg-primary"
+        >天気予報<span id="forecast-loc">{{ fcast_loc }}</span></div>
+        <div class="card-body">
+          <div class="row table-responsive">
+            <table class="table table-bordered">
+              <tbody>
+                <tr>
+                  <th></th>
+                  <th class="text-center">今日</th>
+                  <th class="text-center">明日</th>
+                </tr>
+                <tr>
+                  <th scope="row">天気</th>
+                  <td id="today-weather">
+                    {{ today_fcast['weather'] or '' }}
+                  </td>
+                  <td id="tomorrow-weather">
+                    {{ tomorrow_fcast['weather'] or '' }}
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row">最高気温</th>
+                  <td id="today-max-temp">
+                    {{ today_fcast['temp']['max'] or '' }}
+                  </td>
+                  <td id="tomorrow-max-temp">
+                    {{ tomorrow_fcast['temp']['max'] or '' }}
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row">最低気温</th>
+                  <td id="today-min-temp">
+                    {{ today_fcast['temp']['min'] or '' }}
+                  </td>
+                  <td id="tomorrow-min-temp">
+                    {{ tomorrow_fcast['temp']['min'] or '' }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="row table-responsive">
+            <table class="table table-bordered">
+              <tbody>
+                <tr>
+                  <td>時間</td>
+                  {% for item in fcast_24_hours %}
+                  <td id="hour-{{ loop.index }}">{{ item['time'] }}</td>
+                  {% endfor %}
+                </tr>
+                <tr>
+                  <td>天気</td>
+                  {% for item in fcast_24_hours %}
+                  <td id="weather-{{ loop.index }}">{{ item['weather'] }}</td>
+                  {% endfor %}
+                </tr>
+                <tr>
+                  <td>気温</td>
+                  {% for item in fcast_24_hours %}
+                  <td id="temp-{{ loop.index }}">{{ item['temp'] }}</td>
+                  {% endfor %}
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+{% endblock %}
+
+{% block script %}
+<script type="module">
+  import {sse}
+  from '{{ url_for('static', filename='sse.js') }}';
+  sse('{{ url_for('sse.stream') }}');
+</script>
 {% endblock %}

@@ -1,6 +1,8 @@
 import pytest
 import simplejson as json
 from flask import url_for
+from gpiozero.pins.mock import MockFactory
+from gpiozero import Device
 
 from app import create_app, db
 from app.models import (
@@ -11,6 +13,7 @@ from app.models import (
     Setting,
     User
 )
+from app.tasks import PyTenkiTask
 from config import Config
 
 
@@ -21,17 +24,75 @@ class TestConfig(Config):
     HASH_ROUNDS = 1
 
 
-@pytest.fixture(scope='module')
-def client():
+@pytest.fixture
+def app(mocker):
+    class MockForecastSummary:
+        def fetch_weather_data(self, city_id):
+            pass
+
+        def get_city(self):
+            return 'Tokyo'
+
+        def get_summary(self, period=''):
+            summary = {
+                'day': 'Today',
+                'city': self.get_city(),
+                'weather': 'Fine',
+                'temp': {'max': 1, 'min': 0}
+            }
+
+            if period:
+                summary['day'] = 'Tomorrow'
+
+            return summary
+
+    class MockForecastDetails:
+        def fetch_parse_html_source(self, pinpoint_id):
+            pass
+
+        def get_pinpoint_loc_name(self):
+            return 'Minato-ku'
+
+        def get_3_hourly_forecasts_for_next_24_hours(self):
+            return [
+                {'time': '9',  'temp': '', 'weather': ''},
+                {'time': '12', 'temp': '', 'weather': ''},
+                {'time': '15', 'temp': '', 'weather': ''},
+                {'time': '18', 'temp': '', 'weather': ''},
+                {'time': '21', 'temp': '', 'weather': ''},
+                {'time': '0',  'temp': '', 'weather': ''},
+                {'time': '3',  'temp': '', 'weather': ''},
+                {'time': '6',  'temp': '', 'weather': ''},
+                {'time': '9',  'temp': '', 'weather': ''}
+            ]
+
+    mocker.patch('tenkihaxjp.ForecastSummary',
+                 return_value=MockForecastSummary())
+    mocker.patch('tenkihaxjp.ForecastDetails',
+                 return_value=MockForecastDetails())
+
+    Device.pin_factory = MockFactory()
+
     app = create_app(TestConfig)
 
     with app.app_context():
         app.test_request_context().push()
-        yield app.test_client()
+        yield app
 
 
-@pytest.fixture(scope='function')
-def login_client(client, app_db):
+@pytest.fixture
+def client(mocker, app, app_db):
+    pytenki_task = PyTenkiTask()
+    mocker.patch('app.tasks.PyTenkiTask',
+                 return_value=pytenki_task)
+
+    yield app.test_client()
+    pytenki_task.exit_thread.set()
+    pytenki_task.pytenki._close_button()
+
+
+@pytest.fixture
+def login_client(client):
     with client:
         yield client.post(
             url_for('auth.login'),
@@ -40,7 +101,15 @@ def login_client(client, app_db):
         )
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture
+def pytenki_task(app, app_db):
+    pytenki_task = PyTenkiTask()
+    yield pytenki_task
+    pytenki_task.exit_thread.set()
+    pytenki_task.pytenki._close_button()
+
+
+@pytest.fixture
 def app_db():
     db.create_all()
 
@@ -76,7 +145,12 @@ def app_db():
     setting_2 = Setting(
         app='gpio',
         value=json.dumps({
-            'led': {'fine': '2', 'cloud': '3'},
+            'led': {
+                'fine': '2',
+                'cloud': '3',
+                'rain': '5',
+                'snow': '6'
+            },
             'tts_button': '4'
         })
     )
@@ -94,8 +168,6 @@ def app_db():
         setting_2
     ])
     db.session.commit()
-
     yield db
-
     db.session.remove()
     db.drop_all()
