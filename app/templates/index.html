@@ -81,6 +81,11 @@
 {% endblock %}
 
 {% block script %}
+<style style="text/css">
+  .table-responsive {
+    width: auto;
+  }
+</style>
 <script type="module">
   import {sse}
   from '{{ url_for('static', filename='sse.js') }}';

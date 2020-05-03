@@ -4,6 +4,10 @@ function sse(streamURL) {
   eventSource.addEventListener('pytenki', function(event) {
     const data = JSON.parse(event.data);
 
+    if (!data) {
+      return null;
+    }
+
     updateContent('forecast-loc', data.fcast_loc);
 
     updateContent('today-weather', data.fcast.today.weather);
