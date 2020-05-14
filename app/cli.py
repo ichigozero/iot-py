@@ -1,11 +1,16 @@
 from flask import Blueprint
 from tenkihaxjp import ForecastArea, ForecastSummary
+from traininfojp import RailList, RailSummary
 
 from app import db
 from app.models import (
     City,
     PinpointLocation,
     Prefecture,
+    Railway,
+    RailwayCategory,
+    RailwayCompany,
+    RailwayRegion,
     Region,
     Setting,
     User
@@ -63,6 +68,45 @@ def add_forecast_areas():
                     db.session.add(pinpoint)
 
 
+def add_regular_railway_data():
+    rail_list = RailList()
+    rail_summary = RailSummary()
+
+    rail_list.fetch_parse_html_source()
+    summary_pages = rail_list.get_regular_train_summary_page_urls()
+
+    category = RailwayCategory(name=rail_list.get_regular_train_title())
+
+    for page in summary_pages:
+        rail_summary.fetch_parse_html_source(page['url'])
+        company_names = rail_summary.get_rail_company_names()
+
+        region = RailwayRegion(name=page['title'])
+
+        for company_name in company_names:
+            company = (
+                RailwayCompany.query.filter_by(name=company_name).first() or
+                RailwayCompany(name=company_name)
+            )
+            company.regions.append(region)
+            category.companies.append(company)
+
+            lines = rail_summary.get_line_names_by_rail_company(company_name)
+
+            for line in lines:
+                url = rail_summary.get_line_details_page_url(line)
+                railway = Railway(
+                    name=line,
+                    status_page_url=url,
+                    category=category,
+                    region=region
+                )
+                db.session.add(railway)
+            db.session.add(company)
+        db.session.add(region)
+    db.session.add(category)
+
+
 def add_settings():
     print('Add default settings')
 
@@ -79,4 +123,5 @@ def init_db():
     add_admin_user()
     add_settings()
     add_forecast_areas()
+    add_regular_railway_data()
     db.session.commit()
