@@ -85,3 +85,60 @@ class PinpointLocation(db.Model):
 
     def __repr__(self):
         return '<PinpointLocation {}>'.format(self.name)
+
+
+class RailwayCategory(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), index=True)
+    railways = db.relationship('Railway', backref='category', lazy='dynamic')
+    companies = db.relationship(
+        'RailwayCompany',
+        secondary=db.Table(
+            'railway_category_company', db.Model.metadata,
+            db.Column('railway_category_id', db.Integer,
+                      db.ForeignKey('railway_category.id')),
+            db.Column('railway_company_id', db.Integer,
+                      db.ForeignKey('railway_company.id'))
+        )
+    )
+
+    def __repr__(self):
+        return '<RailwayCategory {}>'.format(self.name)
+
+
+class RailwayCompany(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), index=True)
+    regions = db.relationship(
+        'RailwayRegion',
+        secondary=db.Table(
+            'railway_company_region', db.Model.metadata,
+            db.Column('railway_company_id', db.Integer,
+                      db.ForeignKey('railway_company.id')),
+            db.Column('railway_region_id', db.Integer,
+                      db.ForeignKey('railway_region.id'))
+        )
+    )
+
+    def __repr__(self):
+        return '<RailwayCompany {}>'.format(self.name)
+
+
+class RailwayRegion(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), index=True)
+    railways = db.relationship('Railway', backref='region', lazy='dynamic')
+
+    def __repr__(self):
+        return '<RailwayRegion {}>'.format(self.name)
+
+
+class Railway(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), index=True)
+    status_page_url = db.Column(db.String(64), index=True)
+    category_id = db.Column(db.Integer, db.ForeignKey('railway_category.id'))
+    region_id = db.Column(db.Integer, db.ForeignKey('railway_region.id'))
+
+    def __repr__(self):
+        return '<Railway {}>'.format(self.name)
