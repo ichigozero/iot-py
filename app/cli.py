@@ -148,6 +148,34 @@ def add_rapid_railway_data():
     db.session.add(category)
 
 
+def add_bullet_railway_data():
+    rail_list = RailList()
+    rail_list.fetch_parse_html_source()
+    details_page = rail_list.get_bullet_train_details_page_urls()
+
+    category = RailwayCategory(name=rail_list.get_bullet_train_title())
+    region = (
+        RailwayRegion.query.filter_by(name=JP_REGION_ALL).first() or
+        RailwayRegion(name=JP_REGION_ALL)
+    )
+    company = RailwayCompany(name='JRグループ各社')
+    company.regions.append(region)
+    category.companies.append(company)
+
+    for page in details_page:
+        railway = Railway(
+            name=page['title'],
+            status_page_url=page['url'],
+            category=category,
+            region=region
+        )
+        db.session.add(railway)
+
+    db.session.add(company)
+    db.session.add(region)
+    db.session.add(category)
+
+
 def add_settings():
     print('Add default settings')
 
@@ -166,4 +194,5 @@ def init_db():
     add_forecast_areas()
     add_regular_railway_data()
     add_rapid_railway_data()
+    add_bullet_railway_data()
     db.session.commit()
