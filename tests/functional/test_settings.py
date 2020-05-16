@@ -208,6 +208,7 @@ def test_successful_pydensha_settings_update(mocker, client, login_client):
     )
 
     assert response.status_code == 200
+    assert b'PyDensha Settings Have Been Updated Successfully' in response.data
     assert b'<option selected value="13">' in response.data
     assert b'<option selected value="19">' in response.data
     assert b'<option selected value="26">' in response.data

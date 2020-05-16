@@ -227,6 +227,7 @@ def pydensha():
     if form.validate_on_submit():
         store_pydensha_form_data_to_db(form, gpio)
         db.session.commit()
+        flash('PyDensha Settings Have Been Updated Successfully', 'success')
         return redirect(url_for('settings.pydensha'))
 
     return render_template(
