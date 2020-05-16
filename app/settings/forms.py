@@ -69,3 +69,11 @@ class PyTenkiForm(FlaskForm):
                 seen.add(field.data)
 
         return result
+
+
+class PyDenshaForm(FlaskForm):
+    led_normal = SelectField(u'Normal', choices=gpio_pins())
+    led_delayed = SelectField(u'Delayed', choices=gpio_pins())
+    led_other = SelectField(u'Other ', choices=gpio_pins())
+
+    submit = SubmitField('Apply')

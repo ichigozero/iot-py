@@ -6,7 +6,7 @@ from app import db
 from app.helper import get_dict_val
 from app.models import City, PinpointLocation, Prefecture, Region, Setting
 from app.settings import bp
-from app.settings.forms import PyTenkiForm
+from app.settings.forms import PyTenkiForm, PyDenshaForm
 
 
 def store_form_data_to_db(form):
@@ -172,7 +172,10 @@ def get_choices_of_area(areas):
 @bp.route('/settings/pydensha')
 @login_required
 def pydensha():
+    form = PyDenshaForm()
+
     return render_template(
         'settings/pydensha.html',
-        title='PyDensha - Settings'
+        title='PyDensha - Settings',
+        form=form
     )
