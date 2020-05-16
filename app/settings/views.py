@@ -9,7 +9,7 @@ from app.settings import bp
 from app.settings.forms import PyTenkiForm, PyDenshaForm
 
 
-def store_pytenki_form_data_to_db(form):
+def store_pytenki_form_data_to_db(form, gpio):
     Setting.update_setting(
         app='pytenki',
         raw_data={
@@ -29,7 +29,6 @@ def store_pytenki_form_data_to_db(form):
         }
     )
 
-    gpio = Setting.load_setting('gpio')
     led_normal = get_dict_val(gpio, ['train_info', 'led', 'normal'])
     led_delayed = get_dict_val(gpio, ['train_info', 'led', 'delayed'])
     led_other = get_dict_val(gpio, ['train_info', 'led', 'other'])
@@ -117,7 +116,7 @@ def pytenki():
     form.pinpoint_loc.query = PinpointLocation.query.filter_by(city_id=city_id)
 
     if form.validate_on_submit():
-        store_pytenki_form_data_to_db(form)
+        store_pytenki_form_data_to_db(form, gpio)
         db.session.commit()
 
         app.pytenki_task.init_task()
@@ -185,8 +184,7 @@ def get_choices_of_area(areas):
     return choices
 
 
-def store_pydensha_form_data_to_db(form):
-    gpio = Setting.load_setting('gpio')
+def store_pydensha_form_data_to_db(form, gpio):
     led_fine = get_dict_val(gpio, ['weather', 'led', 'fine'])
     led_cloud = get_dict_val(gpio, ['weather', 'led', 'cloud'])
     led_rain = get_dict_val(gpio, ['weather', 'led', 'rain'])
@@ -227,7 +225,7 @@ def pydensha():
     )
 
     if form.validate_on_submit():
-        store_pydensha_form_data_to_db(form)
+        store_pydensha_form_data_to_db(form, gpio)
         db.session.commit()
         return redirect(url_for('settings.pydensha'))
 
