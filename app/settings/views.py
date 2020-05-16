@@ -167,3 +167,12 @@ def get_choices_of_area(areas):
         choices.append({'value': area.id, 'text': area.name})
 
     return choices
+
+
+@bp.route('/settings/pydensha')
+@login_required
+def pydensha():
+    return render_template(
+        'settings/pydensha.html',
+        title='PyDensha - Settings'
+    )

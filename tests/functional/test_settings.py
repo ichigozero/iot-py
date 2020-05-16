@@ -187,3 +187,9 @@ def test_fetch_areas_by_city(client, login_client):
     }
 
     assert response.json['choices'] == expected
+
+
+def test_fetch_pydensha_settings_page(client, login_client):
+    assert not current_user.is_anonymous
+    response = client.get(url_for('settings.pydensha'))
+    assert response.status_code == 200

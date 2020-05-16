@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% from "navbar.html" import navbar %}
+
+{% block content %}
+{{ navbar(current_user) }}
+{% endblock %}
