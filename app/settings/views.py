@@ -30,23 +30,30 @@ def store_pytenki_form_data_to_db(form):
     )
 
     gpio = Setting.load_setting('gpio')
-    led_normal = get_dict_val(gpio, ['led', 'normal'])
-    led_delayed = get_dict_val(gpio, ['led', 'delayed'])
-    led_other = get_dict_val(gpio, ['led', 'other'])
+    led_normal = get_dict_val(gpio, ['train_info', 'led', 'normal'])
+    led_delayed = get_dict_val(gpio, ['train_info', 'led', 'delayed'])
+    led_other = get_dict_val(gpio, ['train_info', 'led', 'other'])
 
     Setting.update_setting(
         app='gpio',
         raw_data={
-            'led': {
-                'fine': form.led_fine.data,
-                'cloud': form.led_cloud.data,
-                'rain': form.led_rain.data,
-                'snow': form.led_snow.data,
-                'normal': led_normal,
-                'delayed': led_delayed,
-                'other': led_other
+            'weather': {
+                'led': {
+                    'fine': form.led_fine.data,
+                    'cloud': form.led_cloud.data,
+                    'rain': form.led_rain.data,
+                    'snow': form.led_snow.data
+                },
+                'tts_button': form.tts_button.data
             },
-            'tts_button': form.tts_button.data
+            'train_info': {
+                'led': {
+                    'normal': led_normal,
+                    'delayed': led_delayed,
+                    'other': led_other
+                },
+                'tts_button': form.tts_button.data
+            },
         }
     )
 
@@ -76,11 +83,11 @@ def pytenki():
             pytenki, ['led_duration', 'fade_in_time']) or 3.0,
         fade_out_time=get_dict_val(
             pytenki, ['led_duration', 'fade_out_time']) or 2.0,
-        led_fine=get_dict_val(gpio, ['led', 'fine']),
-        led_cloud=get_dict_val(gpio, ['led', 'cloud']),
-        led_rain=get_dict_val(gpio, ['led', 'rain']),
-        led_snow=get_dict_val(gpio, ['led', 'snow']),
-        tts_button=get_dict_val(gpio, ['tts_button']),
+        led_fine=get_dict_val(gpio, ['weather', 'led', 'fine']),
+        led_cloud=get_dict_val(gpio, ['weather', 'led', 'cloud']),
+        led_rain=get_dict_val(gpio, ['weather', 'led', 'rain']),
+        led_snow=get_dict_val(gpio, ['weather', 'led', 'snow']),
+        tts_button=get_dict_val(gpio, ['weather', 'tts_button']),
     )
 
     region_id = (
@@ -180,25 +187,31 @@ def get_choices_of_area(areas):
 
 def store_pydensha_form_data_to_db(form):
     gpio = Setting.load_setting('gpio')
-    led_fine = get_dict_val(gpio, ['led', 'fine'])
-    led_cloud = get_dict_val(gpio, ['led', 'cloud'])
-    led_rain = get_dict_val(gpio, ['led', 'rain'])
-    led_snow = get_dict_val(gpio, ['led', 'snow'])
-    tts_button = get_dict_val(gpio, ['tts_button'])
+    led_fine = get_dict_val(gpio, ['weather', 'led', 'fine'])
+    led_cloud = get_dict_val(gpio, ['weather', 'led', 'cloud'])
+    led_rain = get_dict_val(gpio, ['weather', 'led', 'rain'])
+    led_snow = get_dict_val(gpio, ['weather', 'led', 'snow'])
+    tts_button = get_dict_val(gpio, ['weather', 'tts_button'])
 
     Setting.update_setting(
         app='gpio',
         raw_data={
-            'led': {
-                'normal': form.led_normal.data,
-                'delayed': form.led_delayed.data,
-                'other': form.led_other.data,
-                'fine': led_fine,
-                'cloud': led_cloud,
-                'rain': led_rain,
-                'snow': led_snow
+            'weather': {
+                'led': {
+                    'fine': led_fine,
+                    'cloud': led_cloud,
+                    'rain': led_rain,
+                    'snow': led_snow
+                },
+                'tts_button': tts_button
             },
-            'tts_button': tts_button
+            'train_info': {
+                'led': {
+                    'normal': form.led_normal.data,
+                    'delayed': form.led_delayed.data,
+                    'other': form.led_other.data
+                }
+            }
         }
     )
 
@@ -208,9 +221,9 @@ def store_pydensha_form_data_to_db(form):
 def pydensha():
     gpio = Setting.load_setting('gpio')
     form = PyDenshaForm(
-        led_normal=get_dict_val(gpio, ['led', 'normal']),
-        led_delayed=get_dict_val(gpio, ['led', 'delayed']),
-        led_other=get_dict_val(gpio, ['led', 'other'])
+        led_normal=get_dict_val(gpio, ['train_info', 'led', 'normal']),
+        led_delayed=get_dict_val(gpio, ['train_info', 'led', 'delayed']),
+        led_other=get_dict_val(gpio, ['train_info', 'led', 'other'])
     )
 
     if form.validate_on_submit():

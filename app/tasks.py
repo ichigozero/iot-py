@@ -64,10 +64,10 @@ class PyTenkiTask(BackgroundTask):
         self.pytenki._close_leds()
         self.pytenki._close_button()
 
-        led_pins = get_dict_val(gpio, ['led'])
+        led_pins = get_dict_val(gpio, ['weather', 'led'])
         self.pytenki.assign_leds(led_pins)
 
-        button_pin = get_dict_val(gpio, ['tts_button'])
+        button_pin = get_dict_val(gpio, ['weather', 'tts_button'])
         self.pytenki.assign_button(button_pin)
 
     @wait_event

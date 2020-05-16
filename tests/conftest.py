@@ -145,16 +145,22 @@ def app_db():
     setting_2 = Setting(
         app='gpio',
         value=json.dumps({
-            'led': {
-                'fine': '2',
-                'cloud': '3',
-                'rain': '5',
-                'snow': '6',
-                'normal': '16',
-                'delayed': '20',
-                'other': '21'
+            'weather': {
+                'led': {
+                    'fine': '2',
+                    'cloud': '3',
+                    'rain': '5',
+                    'snow': '6',
+                },
+                'tts_button': '4'
             },
-            'tts_button': '4'
+            'train_info': {
+                'led': {
+                    'normal': '16',
+                    'delayed': '20',
+                    'other': '21'
+                },
+            }
         })
     )
 
