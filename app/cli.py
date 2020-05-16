@@ -69,6 +69,8 @@ def add_forecast_areas():
 
 
 def add_regular_railway_data():
+    print('Add regular railway data')
+
     rail_list = RailList()
     rail_summary = RailSummary()
 
@@ -108,6 +110,8 @@ def add_regular_railway_data():
 
 
 def add_rapid_railway_data():
+    print('Add rapid railway data')
+
     rail_list = RailList()
     rail_summary = RailSummary()
 
@@ -149,6 +153,8 @@ def add_rapid_railway_data():
 
 
 def add_bullet_railway_data():
+    print('Add bullet railway data')
+
     rail_list = RailList()
     rail_list.fetch_parse_html_source()
     details_page = rail_list.get_bullet_train_details_page_urls()
