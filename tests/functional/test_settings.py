@@ -191,20 +191,23 @@ def test_fetch_areas_by_city(client, login_client):
 
 def test_fetch_pydensha_settings_page(client, login_client):
     assert not current_user.is_anonymous
+
     response = client.get(url_for('settings.pydensha'))
+
     assert response.status_code == 200
+    assert b'<option selected value="16">' in response.data
+    assert b'<option selected value="20">' in response.data
+    assert b'<option selected value="21">' in response.data
 
 
 def test_successful_pydensha_settings_update(mocker, client, login_client):
-    client.post(
+    response = client.post(
         url_for('settings.pydensha'),
         data=dict(led_normal='13', led_delayed='19', led_other='26'),
         follow_redirects=True
     )
 
-    from app.models import Setting
-
-    setting = Setting.load_setting('gpio')
-    assert setting['led']['normal'] == '13'
-    assert setting['led']['delayed'] == '19'
-    assert setting['led']['other'] == '26'
+    assert response.status_code == 200
+    assert b'<option selected value="13">' in response.data
+    assert b'<option selected value="19">' in response.data
+    assert b'<option selected value="26">' in response.data

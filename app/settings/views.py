@@ -206,7 +206,12 @@ def store_pydensha_form_data_to_db(form):
 @bp.route('/settings/pydensha', methods=['GET', 'POST'])
 @login_required
 def pydensha():
-    form = PyDenshaForm()
+    gpio = Setting.load_setting('gpio')
+    form = PyDenshaForm(
+        led_normal=get_dict_val(gpio, ['led', 'normal']),
+        led_delayed=get_dict_val(gpio, ['led', 'delayed']),
+        led_other=get_dict_val(gpio, ['led', 'other'])
+    )
 
     if form.validate_on_submit():
         store_pydensha_form_data_to_db(form)

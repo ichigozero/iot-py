@@ -149,7 +149,10 @@ def app_db():
                 'fine': '2',
                 'cloud': '3',
                 'rain': '5',
-                'snow': '6'
+                'snow': '6',
+                'normal': '16',
+                'delayed': '20',
+                'other': '21'
             },
             'tts_button': '4'
         })
