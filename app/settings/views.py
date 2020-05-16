@@ -9,7 +9,7 @@ from app.settings import bp
 from app.settings.forms import PyTenkiForm, PyDenshaForm
 
 
-def store_form_data_to_db(form):
+def store_pytenki_form_data_to_db(form):
     Setting.update_setting(
         app='pytenki',
         raw_data={
@@ -28,6 +28,12 @@ def store_form_data_to_db(form):
             },
         }
     )
+
+    gpio = Setting.load_setting('gpio')
+    led_normal = get_dict_val(gpio, ['led', 'normal'])
+    led_delayed = get_dict_val(gpio, ['led', 'delayed'])
+    led_other = get_dict_val(gpio, ['led', 'other'])
+
     Setting.update_setting(
         app='gpio',
         raw_data={
@@ -35,7 +41,10 @@ def store_form_data_to_db(form):
                 'fine': form.led_fine.data,
                 'cloud': form.led_cloud.data,
                 'rain': form.led_rain.data,
-                'snow': form.led_snow.data
+                'snow': form.led_snow.data,
+                'normal': led_normal,
+                'delayed': led_delayed,
+                'other': led_other
             },
             'tts_button': form.tts_button.data
         }
@@ -101,7 +110,7 @@ def pytenki():
     form.pinpoint_loc.query = PinpointLocation.query.filter_by(city_id=city_id)
 
     if form.validate_on_submit():
-        store_form_data_to_db(form)
+        store_pytenki_form_data_to_db(form)
         db.session.commit()
 
         app.pytenki_task.init_task()
@@ -169,10 +178,40 @@ def get_choices_of_area(areas):
     return choices
 
 
-@bp.route('/settings/pydensha')
+def store_pydensha_form_data_to_db(form):
+    gpio = Setting.load_setting('gpio')
+    led_fine = get_dict_val(gpio, ['led', 'fine'])
+    led_cloud = get_dict_val(gpio, ['led', 'cloud'])
+    led_rain = get_dict_val(gpio, ['led', 'rain'])
+    led_snow = get_dict_val(gpio, ['led', 'snow'])
+    tts_button = get_dict_val(gpio, ['tts_button'])
+
+    Setting.update_setting(
+        app='gpio',
+        raw_data={
+            'led': {
+                'normal': form.led_normal.data,
+                'delayed': form.led_delayed.data,
+                'other': form.led_other.data,
+                'fine': led_fine,
+                'cloud': led_cloud,
+                'rain': led_rain,
+                'snow': led_snow
+            },
+            'tts_button': tts_button
+        }
+    )
+
+
+@bp.route('/settings/pydensha', methods=['GET', 'POST'])
 @login_required
 def pydensha():
     form = PyDenshaForm()
+
+    if form.validate_on_submit():
+        store_pydensha_form_data_to_db(form)
+        db.session.commit()
+        return redirect(url_for('settings.pydensha'))
 
     return render_template(
         'settings/pydensha.html',

@@ -193,3 +193,18 @@ def test_fetch_pydensha_settings_page(client, login_client):
     assert not current_user.is_anonymous
     response = client.get(url_for('settings.pydensha'))
     assert response.status_code == 200
+
+
+def test_successful_pydensha_settings_update(mocker, client, login_client):
+    client.post(
+        url_for('settings.pydensha'),
+        data=dict(led_normal='13', led_delayed='19', led_other='26'),
+        follow_redirects=True
+    )
+
+    from app.models import Setting
+
+    setting = Setting.load_setting('gpio')
+    assert setting['led']['normal'] == '13'
+    assert setting['led']['delayed'] == '19'
+    assert setting['led']['other'] == '26'
