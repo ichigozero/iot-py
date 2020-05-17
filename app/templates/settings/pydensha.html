@@ -14,19 +14,40 @@
           <div class="form-group row">
             {{ form.led_normal.label(class_="col-lg-2 col-form-label") }}
             <div class="col-lg-10">
+              {% if not form.led_normal.errors %}
               {{ form.led_normal(class_="form-control") }}
+              {% else %}
+              {{ form.led_normal(class_="form-control is-invalid") }}
+              {% endif %}
+              {% for error in form.led_normal.errors %}
+              <div class="invalid-feedback">{{ error }}</div>
+              {% endfor %}
             </div>
           </div>
           <div class="form-group row">
             {{ form.led_delayed.label(class_="col-lg-2 col-form-label") }}
             <div class="col-lg-10">
+              {% if not form.led_delayed.errors %}
               {{ form.led_delayed(class_="form-control") }}
+              {% else %}
+              {{ form.led_delayed(class_="form-control is-invalid") }}
+              {% endif %}
+              {% for error in form.led_delayed.errors %}
+              <div class="invalid-feedback">{{ error }}</div>
+              {% endfor %}
             </div>
           </div>
           <div class="form-group row">
             {{ form.led_other.label(class_="col-lg-2 col-form-label") }}
             <div class="col-lg-10">
+              {% if not form.led_other.errors %}
               {{ form.led_other(class_="form-control") }}
+              {% else %}
+              {{ form.led_other(class_="form-control is-invalid") }}
+              {% endif %}
+              {% for error in form.led_other.errors %}
+              <div class="invalid-feedback">{{ error }}</div>
+              {% endfor %}
             </div>
           </div>
         </div>

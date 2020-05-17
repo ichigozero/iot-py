@@ -72,8 +72,8 @@ class PyTenkiForm(FlaskForm):
 
 
 class PyDenshaForm(FlaskForm):
-    led_normal = SelectField(u'Normal', choices=gpio_pins())
-    led_delayed = SelectField(u'Delayed', choices=gpio_pins())
-    led_other = SelectField(u'Other ', choices=gpio_pins())
+    led_normal = gpio_select_field(u'Normal')
+    led_delayed = gpio_select_field(u'Delayed')
+    led_other = gpio_select_field(u'Other')
 
     submit = SubmitField('Apply')
