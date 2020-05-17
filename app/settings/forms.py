@@ -77,3 +77,21 @@ class PyDenshaForm(FlaskForm):
     led_other = gpio_select_field(u'Other')
 
     submit = SubmitField('Apply')
+
+    def validate(self):
+        if not FlaskForm.validate(self):
+            return False
+
+        seen = set()
+        result = True
+        message = 'Unable to assign GPIO pin more than once at a time'
+
+        for field in [self.led_normal, self.led_delayed,
+                      self.led_other]:
+            if field.data in seen:
+                field.errors.append(message)
+                result = False
+            else:
+                seen.add(field.data)
+
+        return result

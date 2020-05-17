@@ -218,6 +218,23 @@ def test_update_pydensha_settings_with_null_values(client, login_client):
         assert element in response.data
 
 
+def test_update_pydensha_settings_with_duplicate_values(client, login_client):
+    response = client.post(
+        url_for('settings.pydensha'),
+        data=dict(led_normal='13', led_delayed='13',
+                  led_other='13'),
+        follow_redirects=True
+    )
+
+    assert response.status_code == 200
+    elements = (
+        b'"form-control is-invalid" id="led_delayed"',
+        b'"form-control is-invalid" id="led_other"',
+    )
+    for element in elements:
+        assert element in response.data
+
+
 def test_successful_pydensha_settings_update(mocker, client, login_client):
     response = client.post(
         url_for('settings.pydensha'),
