@@ -192,6 +192,12 @@ def store_pydensha_form_data_to_db(form, gpio):
     tts_button = get_dict_val(gpio, ['weather', 'tts_button'])
 
     Setting.update_setting(
+        app='pydensha',
+        raw_data={
+            'fetch_intvl': form.fetch_intvl.data,
+        }
+    )
+    Setting.update_setting(
         app='gpio',
         raw_data={
             'weather': {

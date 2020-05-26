@@ -243,13 +243,15 @@ def test_update_pydensha_settings_with_duplicate_values(client, login_client):
 def test_successful_pydensha_settings_update(mocker, client, login_client):
     response = client.post(
         url_for('settings.pydensha'),
-        data=dict(led_normal='13', led_delayed='19', led_other='26'),
+        data=dict(led_normal='13', led_delayed='19',
+                  led_other='26', fetch_intvl='10'),
         follow_redirects=True
     )
 
     assert response.status_code == 200
     elements = (
         b'PyDensha Settings Have Been Updated Successfully',
+        b'name="fetch_intvl" step="5" type="range" value="10"',
         b'<option selected value="13">',
         b'<option selected value="19">',
         b'<option selected value="26">'
