@@ -8,7 +8,18 @@
     {{ flash() }}
     <form action="" method="post" novalidate>
       {{ form.hidden_tag() }}
-      <div class="card">
+      <div class="card mt-4">
+        <div class="card-header">Data Fetch Interval</div>
+        <div class="card-body text-center">
+          {{ form.fetch_intvl(id="fetch-intvl", class_="custom-range",
+                              min=10, max=60, step=5) }}
+          <output>
+            <span id="fetch-intvl-val"></span>
+            <span> minutes</span>
+          </output>
+        </div>
+      </div>
+      <div class="card mt-4">
         <div class="card-header">Railway Status LED</div>
         <div class="card-body">
           <div class="form-group row">
@@ -55,4 +66,12 @@
       {{ form.submit(class_="btn btn-primary") }}
     </form>
 </div>
+{% endblock %}
+
+{% block script %}
+<script type="module">
+  import {outputSliderVal}
+  from '{{ url_for('static', filename='helper.js') }}';
+  outputSliderVal('fetch-intvl', 'fetch-intvl-val');
+</script>
 {% endblock %}

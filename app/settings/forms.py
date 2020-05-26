@@ -72,6 +72,7 @@ class PyTenkiForm(FlaskForm):
 
 
 class PyDenshaForm(FlaskForm):
+    fetch_intvl = IntegerRangeField(u'Data Fetch Interval')
     led_normal = gpio_select_field(u'Normal')
     led_delayed = gpio_select_field(u'Delayed')
     led_other = gpio_select_field(u'Other')

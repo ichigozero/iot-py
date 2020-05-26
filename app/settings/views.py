@@ -217,8 +217,10 @@ def store_pydensha_form_data_to_db(form, gpio):
 @bp.route('/settings/pydensha', methods=['GET', 'POST'])
 @login_required
 def pydensha():
+    pydensha = Setting.load_setting('pydensha')
     gpio = Setting.load_setting('gpio')
     form = PyDenshaForm(
+        fetch_intvl=get_dict_val(pydensha, ['fetch_intvl']) or 35,
         led_normal=get_dict_val(gpio, ['train_info', 'led', 'normal']),
         led_delayed=get_dict_val(gpio, ['train_info', 'led', 'delayed']),
         led_other=get_dict_val(gpio, ['train_info', 'led', 'other'])

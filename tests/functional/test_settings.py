@@ -196,8 +196,9 @@ def test_fetch_pydensha_settings_page(client, login_client):
 
     assert response.status_code == 200
     elements = (
-        b'<option selected value="16">'
-        b'<option selected value="20">'
+        b'name="fetch_intvl" step="5" type="range" value="35"',
+        b'<option selected value="16">',
+        b'<option selected value="20">',
         b'<option selected value="21">'
     )
     for element in elements:

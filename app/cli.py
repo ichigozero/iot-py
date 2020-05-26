@@ -186,9 +186,10 @@ def add_settings():
     print('Add default settings')
 
     set1 = Setting(app='pytenki')
-    set2 = Setting(app='gpio')
+    set2 = Setting(app='pydensha')
+    set3 = Setting(app='gpio')
 
-    db.session.add_all([set1, set2])
+    db.session.add_all([set1, set2, set3])
 
 
 @bp.cli.command('init_db')

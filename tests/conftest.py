@@ -143,6 +143,10 @@ def app_db():
         })
     )
     setting_2 = Setting(
+        app='pydensha',
+        value=json.dumps({})
+    )
+    setting_3 = Setting(
         app='gpio',
         value=json.dumps({
             'weather': {
@@ -174,7 +178,8 @@ def app_db():
         pinpoint_loc_1,
         pinpoint_loc_2,
         setting_1,
-        setting_2
+        setting_2,
+        setting_3
     ])
     db.session.commit()
     yield db
