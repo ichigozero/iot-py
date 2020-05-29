@@ -196,10 +196,10 @@ def test_fetch_pydensha_settings_page(client, login_client):
 
     assert response.status_code == 200
     elements = (
-        b'<option value="1">rail_category</option>',
-        b'<option value="1">rail_company</option>',
-        b'<option value="1">rail_region</option>',
-        b'<option value="1">line_1</option>',
+        b'<option selected value="1">rail_category</option>',
+        b'<option selected value="1">rail_company</option>',
+        b'<option selected value="1">rail_region</option>',
+        b'<option selected value="1">line_1</option>',
         b'name="fetch_intvl" step="5" type="range" value="35"',
         b'<option selected value="16">',
         b'<option selected value="20">',
@@ -221,6 +221,10 @@ def test_update_pydensha_settings_with_null_values(client, login_client):
 
     assert response.status_code == 200
     elements = (
+        b'"form-control is-invalid" id="category"',
+        b'"form-control is-invalid" id="company"',
+        b'"form-control is-invalid" id="region"',
+        b'"form-control is-invalid" id="railway"',
         b'"form-control is-invalid" id="led_normal"',
         b'"form-control is-invalid" id="led_delayed"',
         b'"form-control is-invalid" id="led_other"',
@@ -252,7 +256,7 @@ def test_successful_pydensha_settings_update(mocker, client, login_client):
     response = client.post(
         url_for('settings.pydensha'),
         data=dict(category='1', company='1',
-                  region='1', railway='1',
+                  region='1', railway='2',
                   led_normal='13', led_delayed='19',
                   led_other='26', fetch_intvl='10'),
         follow_redirects=True
@@ -261,6 +265,10 @@ def test_successful_pydensha_settings_update(mocker, client, login_client):
     assert response.status_code == 200
     elements = (
         b'PyDensha Settings Have Been Updated Successfully',
+        b'<option selected value="1">rail_category</option>',
+        b'<option selected value="1">rail_company</option>',
+        b'<option selected value="1">rail_region</option>',
+        b'<option selected value="2">line_2</option>',
         b'name="fetch_intvl" step="5" type="range" value="10"',
         b'<option selected value="13">',
         b'<option selected value="19">',

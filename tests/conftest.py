@@ -131,12 +131,19 @@ def app_db():
     railway_category = RailwayCategory(name='rail_category')
     railway_company = RailwayCompany(name='rail_company')
     railway_region = RailwayRegion(name='rail_region')
-    railway = Railway(
+    railway_1 = Railway(
         name='line_1',
         status_page_url='url_1',
         category=railway_category,
         region=railway_region
     )
+    railway_2 = Railway(
+        name='line_2',
+        status_page_url='url_2',
+        category=railway_category,
+        region=railway_region
+    )
+
     railway_company.regions.append(railway_region)
     railway_category.companies.append(railway_company)
 
@@ -160,7 +167,14 @@ def app_db():
     )
     setting_2 = Setting(
         app='pydensha',
-        value=json.dumps({})
+        value=json.dumps({
+            'rail_info': {
+                'category_id': 1,
+                'region_id': 1,
+                'company_id': 1,
+                'railway_ids': [1]
+            }
+        })
     )
     setting_3 = Setting(
         app='gpio',
@@ -196,7 +210,8 @@ def app_db():
         railway_category,
         railway_company,
         railway_region,
-        railway,
+        railway_1,
+        railway_2,
         setting_1,
         setting_2,
         setting_3

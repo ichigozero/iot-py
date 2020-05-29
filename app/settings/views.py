@@ -204,6 +204,12 @@ def store_pydensha_form_data_to_db(form, gpio):
     Setting.update_setting(
         app='pydensha',
         raw_data={
+            'rail_info': {
+                'category_id': form.category.data.id,
+                'region_id': form.region.data.id,
+                'company_id': form.company.data.id,
+                'railway_ids': [data.id for data in form.railway.data],
+            },
             'fetch_intvl': form.fetch_intvl.data,
         }
     )
@@ -235,17 +241,71 @@ def store_pydensha_form_data_to_db(form, gpio):
 def pydensha():
     pydensha = Setting.load_setting('pydensha')
     gpio = Setting.load_setting('gpio')
+
+    category_id_old = get_dict_val(pydensha, ['rail_info', 'category_id'])
+    company_id_old = get_dict_val(pydensha, ['rail_info', 'company_id'])
+    region_id_old = get_dict_val(pydensha, ['rail_info', 'region_id'])
+    railway_ids_old = get_dict_val(pydensha, ['rail_info', 'railway_ids'])
+
     form = PyDenshaForm(
+        category=RailwayCategory.query.get(category_id_old),
+        region=RailwayRegion.query.get(region_id_old),
+        company=RailwayCompany.query.get(company_id_old),
+        railway=[Railway.query.get(id)
+                 for id in railway_ids_old if railway_ids_old],
         fetch_intvl=get_dict_val(pydensha, ['fetch_intvl']) or 35,
         led_normal=get_dict_val(gpio, ['train_info', 'led', 'normal']),
         led_delayed=get_dict_val(gpio, ['train_info', 'led', 'delayed']),
         led_other=get_dict_val(gpio, ['train_info', 'led', 'other'])
     )
 
+    category_id = (
+        request.form.get('category')
+        or category_id_old
+        or RailwayCategory.query.first().id
+    )
+
+    if category_id == category_id_old:
+        company_id = request.form.get('company') or company_id_old
+    else:
+        company_id = (
+            RailwayCompany
+            .query
+            .join(RailwayCategory.companies)
+            .filter(RailwayCategory.id == category_id)
+            .first()
+            .id
+        )
+
+    if company_id == company_id_old:
+        region_id = request.form.get('region') or region_id_old
+    else:
+        region_id = (
+            RailwayRegion
+            .query
+            .join(RailwayCompany.regions)
+            .filter(RailwayCompany.id == company_id)
+            .first()
+            .id
+        )
+
     form.category.query = RailwayCategory.query
-    form.company.query = RailwayCompany.query
-    form.region.query = RailwayRegion.query
-    form.railway.query = Railway.query
+    form.company.query = (
+        RailwayCompany
+        .query
+        .join(RailwayCategory.companies)
+        .filter(RailwayCategory.id == category_id)
+    )
+    form.region.query = (
+        RailwayRegion
+        .query
+        .join(RailwayCompany.regions)
+        .filter(RailwayCompany.id == company_id)
+    )
+    form.railway.query = Railway.query.filter_by(
+        category_id=category_id,
+        region_id=region_id
+    )
 
     if form.validate_on_submit():
         store_pydensha_form_data_to_db(form, gpio)
