@@ -9,6 +9,63 @@
     <form action="" method="post" novalidate>
       {{ form.hidden_tag() }}
       <div class="card mt-4">
+        <div class="card-header">Railway Information</div>
+        <div class="card-body">
+          <div class="form-group row">
+            {{ form.category.label(class_="col-lg-2 col-form-label") }}
+            <div class="col-lg-10">
+              {% if not form.category.errors %}
+              {{ form.category(class_="form-control") }}
+              {% else %}
+              {{ form.category(class_="form-control is-invalid") }}
+              {% endif %}
+              {% for error in form.category.errors %}
+              <div class="invalid-feedback">{{ error }}</div>
+              {% endfor %}
+            </div>
+          </div>
+          <div class="form-group row">
+            {{ form.company.label(class_="col-lg-2 col-form-label") }}
+            <div class="col-lg-10">
+              {% if not form.company.errors %}
+              {{ form.company(class_="form-control") }}
+              {% else %}
+              {{ form.company(class_="form-control is-invalid") }}
+              {% endif %}
+              {% for error in form.company.errors %}
+              <div class="invalid-feedback">{{ error }}</div>
+              {% endfor %}
+            </div>
+          </div>
+          <div class="form-group row">
+            {{ form.region.label(class_="col-lg-2 col-form-label") }}
+            <div class="col-lg-10">
+              {% if not form.region.errors %}
+              {{ form.region(class_="form-control") }}
+              {% else %}
+              {{ form.region(class_="form-control is-invalid") }}
+              {% endif %}
+              {% for error in form.region.errors %}
+              <div class="invalid-feedback">{{ error }}</div>
+              {% endfor %}
+            </div>
+          </div>
+          <div class="form-group row">
+            {{ form.railway.label(class_="col-lg-2 col-form-label") }}
+            <div class="col-lg-10">
+              {% if not form.railway.errors %}
+              {{ form.railway(class_="form-control") }}
+              {% else %}
+              {{ form.railway(class_="form-control is-invalid") }}
+              {% endif %}
+              {% for error in form.railway.errors %}
+              <div class="invalid-feedback">{{ error }}</div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card mt-4">
         <div class="card-header">Data Fetch Interval</div>
         <div class="card-body text-center">
           {{ form.fetch_intvl(id="fetch-intvl", class_="custom-range",

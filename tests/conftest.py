@@ -9,6 +9,10 @@ from app.models import (
     City,
     PinpointLocation,
     Prefecture,
+    Railway,
+    RailwayCategory,
+    RailwayCompany,
+    RailwayRegion,
     Region,
     Setting,
     User
@@ -124,6 +128,18 @@ def app_db():
     pinpoint_loc_1 = PinpointLocation(id=1, name='pinpoint_1', city=city_1)
     pinpoint_loc_2 = PinpointLocation(id=2, name='pinpoint_2', city=city_2)
 
+    railway_category = RailwayCategory(name='rail_category')
+    railway_company = RailwayCompany(name='rail_company')
+    railway_region = RailwayRegion(name='rail_region')
+    railway = Railway(
+        name='line_1',
+        status_page_url='url_1',
+        category=railway_category,
+        region=railway_region
+    )
+    railway_company.regions.append(railway_region)
+    railway_category.companies.append(railway_company)
+
     setting_1 = Setting(
         app='pytenki',
         value=json.dumps({
@@ -177,6 +193,10 @@ def app_db():
         city_2,
         pinpoint_loc_1,
         pinpoint_loc_2,
+        railway_category,
+        railway_company,
+        railway_region,
+        railway,
         setting_1,
         setting_2,
         setting_3

@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import SelectField, SubmitField
 from wtforms.fields.html5 import DecimalRangeField, IntegerRangeField
 from wtforms.validators import DataRequired
-from wtforms_alchemy.fields import QuerySelectField
+from wtforms_alchemy.fields import QuerySelectField, QuerySelectMultipleField
 
 
 def gpio_pins():
@@ -29,6 +29,14 @@ def query_select_field(field_name):
         field_name,
         get_label='name',
         allow_blank=True,
+        validators=[DataRequired()]
+    )
+
+
+def query_select_multiple_field(field_name):
+    return QuerySelectMultipleField(
+        field_name,
+        get_label='name',
         validators=[DataRequired()]
     )
 
@@ -72,6 +80,10 @@ class PyTenkiForm(FlaskForm):
 
 
 class PyDenshaForm(FlaskForm):
+    category = query_select_field(u'Category')
+    company = query_select_field(u'Company')
+    region = query_select_field(u'Region')
+    railway = query_select_multiple_field(u'Railway')
     fetch_intvl = IntegerRangeField(u'Data Fetch Interval')
     led_normal = gpio_select_field(u'Normal')
     led_delayed = gpio_select_field(u'Delayed')

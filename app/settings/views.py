@@ -4,7 +4,17 @@ from flask_login import login_required
 import app
 from app import db
 from app.helper import get_dict_val
-from app.models import City, PinpointLocation, Prefecture, Region, Setting
+from app.models import (
+    City,
+    PinpointLocation,
+    Prefecture,
+    Railway,
+    RailwayCategory,
+    RailwayCompany,
+    RailwayRegion,
+    Region,
+    Setting
+)
 from app.settings import bp
 from app.settings.forms import PyTenkiForm, PyDenshaForm
 
@@ -231,6 +241,11 @@ def pydensha():
         led_delayed=get_dict_val(gpio, ['train_info', 'led', 'delayed']),
         led_other=get_dict_val(gpio, ['train_info', 'led', 'other'])
     )
+
+    form.category.query = RailwayCategory.query
+    form.company.query = RailwayCompany.query
+    form.region.query = RailwayRegion.query
+    form.railway.query = Railway.query
 
     if form.validate_on_submit():
         store_pydensha_form_data_to_db(form, gpio)

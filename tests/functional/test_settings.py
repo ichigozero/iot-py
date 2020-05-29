@@ -196,6 +196,10 @@ def test_fetch_pydensha_settings_page(client, login_client):
 
     assert response.status_code == 200
     elements = (
+        b'<option value="1">rail_category</option>',
+        b'<option value="1">rail_company</option>',
+        b'<option value="1">rail_region</option>',
+        b'<option value="1">line_1</option>',
         b'name="fetch_intvl" step="5" type="range" value="35"',
         b'<option selected value="16">',
         b'<option selected value="20">',
@@ -208,7 +212,9 @@ def test_fetch_pydensha_settings_page(client, login_client):
 def test_update_pydensha_settings_with_null_values(client, login_client):
     response = client.post(
         url_for('settings.pydensha'),
-        data=dict(led_normal='', led_delayed='',
+        data=dict(category='', company='',
+                  region='', railway='',
+                  led_normal='', led_delayed='',
                   led_other=''),
         follow_redirects=True
     )
@@ -226,7 +232,9 @@ def test_update_pydensha_settings_with_null_values(client, login_client):
 def test_update_pydensha_settings_with_duplicate_values(client, login_client):
     response = client.post(
         url_for('settings.pydensha'),
-        data=dict(led_normal='13', led_delayed='13',
+        data=dict(category='1', company='1',
+                  region='1', railway='1',
+                  led_normal='13', led_delayed='13',
                   led_other='13'),
         follow_redirects=True
     )
@@ -243,7 +251,9 @@ def test_update_pydensha_settings_with_duplicate_values(client, login_client):
 def test_successful_pydensha_settings_update(mocker, client, login_client):
     response = client.post(
         url_for('settings.pydensha'),
-        data=dict(led_normal='13', led_delayed='19',
+        data=dict(category='1', company='1',
+                  region='1', railway='1',
+                  led_normal='13', led_delayed='19',
                   led_other='26', fetch_intvl='10'),
         follow_redirects=True
     )
