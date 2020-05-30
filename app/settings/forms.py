@@ -83,7 +83,7 @@ class PyDenshaForm(FlaskForm):
     category = query_select_field(u'Category')
     company = query_select_field(u'Company')
     region = query_select_field(u'Region')
-    railway = query_select_multiple_field(u'Railway')
+    line = query_select_multiple_field(u'Line')
     fetch_intvl = IntegerRangeField(u'Data Fetch Interval')
     led_normal = gpio_select_field(u'Normal')
     led_delayed = gpio_select_field(u'Delayed')

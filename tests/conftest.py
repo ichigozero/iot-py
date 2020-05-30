@@ -9,9 +9,10 @@ from app.models import (
     City,
     PinpointLocation,
     Prefecture,
-    Railway,
     RailwayCategory,
     RailwayCompany,
+    RailwayInfo,
+    RailwayLine,
     RailwayRegion,
     Region,
     Setting,
@@ -129,23 +130,23 @@ def app_db():
     pinpoint_loc_2 = PinpointLocation(id=2, name='pinpoint_2', city=city_2)
 
     railway_category = RailwayCategory(name='rail_category')
+    railway_region_1 = RailwayRegion(name='rail_region_1')
+    railway_region_2 = RailwayRegion(name='rail_region_2')
     railway_company = RailwayCompany(name='rail_company')
-    railway_region = RailwayRegion(name='rail_region')
-    railway_1 = Railway(
-        name='line_1',
-        status_page_url='url_1',
+    railway_line_1 = RailwayLine(name='rail_line_1', status_page_url='url_1')
+    railway_line_2 = RailwayLine(name='rail_line_2', status_page_url='url_2')
+    railway_info_1 = RailwayInfo(
         category=railway_category,
-        region=railway_region
+        region=railway_region_1,
+        company=railway_company,
+        line=railway_line_1
     )
-    railway_2 = Railway(
-        name='line_2',
-        status_page_url='url_2',
+    railway_info_2 = RailwayInfo(
         category=railway_category,
-        region=railway_region
+        region=railway_region_2,
+        company=railway_company,
+        line=railway_line_2
     )
-
-    railway_company.regions.append(railway_region)
-    railway_category.companies.append(railway_company)
 
     setting_1 = Setting(
         app='pytenki',
@@ -172,7 +173,7 @@ def app_db():
                 'category_id': 1,
                 'region_id': 1,
                 'company_id': 1,
-                'railway_ids': [1]
+                'line_ids': [1]
             }
         })
     )
@@ -208,10 +209,13 @@ def app_db():
         pinpoint_loc_1,
         pinpoint_loc_2,
         railway_category,
+        railway_region_1,
+        railway_region_2,
         railway_company,
-        railway_region,
-        railway_1,
-        railway_2,
+        railway_line_1,
+        railway_line_2,
+        railway_info_1,
+        railway_info_2,
         setting_1,
         setting_2,
         setting_3

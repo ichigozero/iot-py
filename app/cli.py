@@ -7,9 +7,10 @@ from app.models import (
     City,
     PinpointLocation,
     Prefecture,
-    Railway,
     RailwayCategory,
     RailwayCompany,
+    RailwayInfo,
+    RailwayLine,
     RailwayRegion,
     Region,
     Setting,
@@ -90,20 +91,19 @@ def add_regular_railway_data():
                 RailwayCompany.query.filter_by(name=company_name).first() or
                 RailwayCompany(name=company_name)
             )
-            company.regions.append(region)
-            category.companies.append(company)
 
             lines = rail_summary.get_line_names_by_rail_company(company_name)
 
             for line in lines:
                 url = rail_summary.get_line_details_page_url(line)
-                railway = Railway(
+                line = RailwayLine(
                     name=line,
-                    status_page_url=url,
-                    category=category,
-                    region=region
+                    status_page_url=url
                 )
-                db.session.add(railway)
+                association = RailwayInfo(category=category, region=region,
+                                          company=company, line=line)
+                db.session.add(association)
+                db.session.add(line)
             db.session.add(company)
         db.session.add(region)
     db.session.add(category)
@@ -133,20 +133,19 @@ def add_rapid_railway_data():
                 RailwayCompany.query.filter_by(name=company_name).first() or
                 RailwayCompany(name=company_name)
             )
-            company.regions.append(region)
-            category.companies.append(company)
 
             lines = rail_summary.get_line_names_by_rail_company(company_name)
 
             for line in lines:
                 url = rail_summary.get_line_details_page_url(line)
-                railway = Railway(
+                line = RailwayLine(
                     name=line,
-                    status_page_url=url,
-                    category=category,
-                    region=region
+                    status_page_url=url
                 )
-                db.session.add(railway)
+                association = RailwayInfo(category=category, region=region,
+                                          company=company, line=line)
+                db.session.add(association)
+                db.session.add(line)
             db.session.add(company)
         db.session.add(region)
     db.session.add(category)
@@ -165,18 +164,16 @@ def add_bullet_railway_data():
         RailwayRegion(name=JP_REGION_ALL)
     )
     company = RailwayCompany(name='JRグループ各社')
-    company.regions.append(region)
-    category.companies.append(company)
 
     for page in details_page:
-        railway = Railway(
+        line = RailwayLine(
             name=page['title'],
-            status_page_url=page['url'],
-            category=category,
-            region=region
+            status_page_url=page['url']
         )
-        db.session.add(railway)
-
+        association = RailwayInfo(category=category, region=region,
+                                  company=company, line=line)
+        db.session.add(association)
+        db.session.add(line)
     db.session.add(company)
     db.session.add(region)
     db.session.add(category)
