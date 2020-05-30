@@ -282,3 +282,70 @@ def test_successful_pydensha_settings_update(mocker, client, login_client):
         assert element in response.data
 
     assert b'<option value="1">rail_line_1</option>' not in response.data
+
+
+def test_fetch_railway_infos_by_category(client, login_client):
+    response = client.post(
+        url_for('settings.railway_infos_by_category'),
+        data=dict(category='1')
+    )
+
+    assert response.status_code == 200
+
+    expected = {
+        'regions': [
+            {'value': '__None', 'text': ''},
+            {'value': 1, 'text': 'rail_region_1'},
+            {'value': 2, 'text': 'rail_region_2'}
+        ],
+        'companies': [
+            {'value': '__None', 'text': ''},
+            {'value': 1, 'text': 'rail_company'},
+        ],
+        'lines': [
+            {'value': '__None', 'text': ''},
+            {'value': 1, 'text': 'rail_line_1'}
+        ]
+    }
+
+    assert response.json['choices'] == expected
+
+
+def test_fetch_railway_infos_by_category_region(client, login_client):
+    response = client.post(
+        url_for('settings.railway_infos_by_category_region'),
+        data=dict(category='1', region='1')
+    )
+
+    assert response.status_code == 200
+
+    expected = {
+        'companies': [
+            {'value': '__None', 'text': ''},
+            {'value': 1, 'text': 'rail_company'},
+        ],
+        'lines': [
+            {'value': '__None', 'text': ''},
+            {'value': 1, 'text': 'rail_line_1'}
+        ]
+    }
+
+    assert response.json['choices'] == expected
+
+
+def test_fetch_railway_infos_by_category_region_company(client, login_client):
+    response = client.post(
+        url_for('settings.railway_infos_by_category_region_company'),
+        data=dict(category='1', region='1', company='1')
+    )
+
+    assert response.status_code == 200
+
+    expected = {
+        'lines': [
+            {'value': '__None', 'text': ''},
+            {'value': 1, 'text': 'rail_line_1'}
+        ]
+    }
+
+    assert response.json['choices'] == expected

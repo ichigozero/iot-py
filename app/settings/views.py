@@ -152,9 +152,9 @@ def areas_by_region():
     pinpoints = PinpointLocation.query.filter_by(city_id=cities.first().id)
 
     choices = {
-        'prefectures': get_choices_of_area(prefectures),
-        'cities': get_choices_of_area(cities),
-        'pinpoints': get_choices_of_area(pinpoints)
+        'prefectures': get_dropdown_choices(prefectures),
+        'cities': get_dropdown_choices(cities),
+        'pinpoints': get_dropdown_choices(pinpoints)
     }
 
     return jsonify(choices=choices)
@@ -168,8 +168,8 @@ def areas_by_prefecture():
     pinpoints = PinpointLocation.query.filter_by(city_id=cities.first().id)
 
     choices = {
-        'cities': get_choices_of_area(cities),
-        'pinpoints': get_choices_of_area(pinpoints)
+        'cities': get_dropdown_choices(cities),
+        'pinpoints': get_dropdown_choices(pinpoints)
     }
 
     return jsonify(choices=choices)
@@ -180,17 +180,17 @@ def areas_by_prefecture():
 def areas_by_city():
     city_id = int(request.form.get('city'))
     pinpoints = PinpointLocation.query.filter_by(city_id=city_id)
-    choices = {'pinpoints': get_choices_of_area(pinpoints)}
+    choices = {'pinpoints': get_dropdown_choices(pinpoints)}
 
     return jsonify(choices=choices)
 
 
-def get_choices_of_area(areas):
+def get_dropdown_choices(tables):
     choices = list()
     choices.append({'value': '__None', 'text': ''})
 
-    for area in areas:
-        choices.append({'value': area.id, 'text': area.name})
+    for table in tables:
+        choices.append({'value': table.id, 'text': table.name})
 
     return choices
 
@@ -326,3 +326,100 @@ def pydensha():
         title='PyDensha - Settings',
         form=form
     )
+
+
+@bp.route('/settings/pydensha/infos-by-category', methods=['POST'])
+@login_required
+def railway_infos_by_category():
+    category_id = int(request.form.get('category'))
+    regions = (
+        RailwayRegion
+        .query
+        .join(RailwayInfo)
+        .filter_by(category_id=category_id)
+    )
+    companies = (
+        RailwayCompany
+        .query
+        .join(RailwayInfo)
+        .filter_by(
+            category_id=category_id,
+            region_id=regions.first().id
+        )
+    )
+    lines = (
+        RailwayLine
+        .query
+        .join(RailwayInfo)
+        .filter_by(
+            category_id=category_id,
+            region_id=regions.first().id,
+            company_id=companies.first().id
+        )
+    )
+
+    choices = {
+        'regions': get_dropdown_choices(regions),
+        'companies': get_dropdown_choices(companies),
+        'lines': get_dropdown_choices(lines)
+    }
+
+    return jsonify(choices=choices)
+
+
+@bp.route('/settings/pydensha/infos-by-category-region', methods=['POST'])
+@login_required
+def railway_infos_by_category_region():
+    category_id = int(request.form.get('category'))
+    region_id = int(request.form.get('region'))
+    companies = (
+        RailwayCompany
+        .query
+        .join(RailwayInfo)
+        .filter_by(
+            category_id=category_id,
+            region_id=region_id
+        )
+    )
+    lines = (
+        RailwayLine
+        .query
+        .join(RailwayInfo)
+        .filter_by(
+            category_id=category_id,
+            region_id=region_id,
+            company_id=companies.first().id
+        )
+    )
+
+    choices = {
+        'companies': get_dropdown_choices(companies),
+        'lines': get_dropdown_choices(lines)
+    }
+
+    return jsonify(choices=choices)
+
+
+@bp.route(
+    '/settings/pydensha/infos-by-category-region-company',
+    methods=['POST']
+)
+@login_required
+def railway_infos_by_category_region_company():
+    category_id = int(request.form.get('category'))
+    region_id = int(request.form.get('region'))
+    company_id = int(request.form.get('company'))
+    lines = (
+        RailwayLine
+        .query
+        .join(RailwayInfo)
+        .filter_by(
+            category_id=category_id,
+            region_id=region_id,
+            company_id=company_id
+        )
+    )
+
+    choices = {'lines': get_dropdown_choices(lines)}
+
+    return jsonify(choices=choices)
