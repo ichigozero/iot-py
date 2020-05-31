@@ -124,30 +124,30 @@ def add_rapid_railway_data():
         RailwayRegion(name=JP_REGION_ALL)
     )
 
-    for page in summary_pages:
-        rail_summary.fetch_parse_html_source(page['url'])
-        company_names = rail_summary.get_rail_company_names()
+    page = summary_pages[0]
+    rail_summary.fetch_parse_html_source(page['url'])
+    company_names = rail_summary.get_rail_company_names()
 
-        for company_name in company_names:
-            company = (
-                RailwayCompany.query.filter_by(name=company_name).first() or
-                RailwayCompany(name=company_name)
+    for company_name in company_names:
+        company = (
+            RailwayCompany.query.filter_by(name=company_name).first() or
+            RailwayCompany(name=company_name)
+        )
+
+        lines = rail_summary.get_line_names_by_rail_company(company_name)
+
+        for line in lines:
+            url = rail_summary.get_line_details_page_url(line)
+            line = RailwayLine(
+                name=line,
+                status_page_url=url
             )
-
-            lines = rail_summary.get_line_names_by_rail_company(company_name)
-
-            for line in lines:
-                url = rail_summary.get_line_details_page_url(line)
-                line = RailwayLine(
-                    name=line,
-                    status_page_url=url
-                )
-                association = RailwayInfo(category=category, region=region,
-                                          company=company, line=line)
-                db.session.add(association)
-                db.session.add(line)
-            db.session.add(company)
-        db.session.add(region)
+            association = RailwayInfo(category=category, region=region,
+                                      company=company, line=line)
+            db.session.add(association)
+            db.session.add(line)
+        db.session.add(company)
+    db.session.add(region)
     db.session.add(category)
 
 
