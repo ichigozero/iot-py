@@ -127,6 +127,14 @@
 
 {% block script %}
 <script type="module">
+  import {updateRailwayInfoDropdowns}
+  from '{{ url_for('static', filename='pydensha-settings.js') }}';
+  updateRailwayInfoDropdowns(
+    '{{ url_for('settings.railway_infos_by_category') }}',
+    '{{ url_for('settings.railway_infos_by_category_region') }}',
+    '{{ url_for('settings.railway_infos_by_category_region_company') }}',
+  );
+
   import {outputSliderVal}
   from '{{ url_for('static', filename='helper.js') }}';
   outputSliderVal('fetch-intvl', 'fetch-intvl-val');

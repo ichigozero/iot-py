@@ -195,6 +195,15 @@ def get_dropdown_choices(tables):
     return choices
 
 
+def get_dropdown_choices_no_blank(tables):
+    choices = list()
+
+    for table in tables:
+        choices.append({'value': table.id, 'text': table.name})
+
+    return choices
+
+
 def store_pydensha_form_data_to_db(form, gpio):
     led_fine = get_dict_val(gpio, ['weather', 'led', 'fine'])
     led_cloud = get_dict_val(gpio, ['weather', 'led', 'cloud'])
@@ -266,26 +275,30 @@ def pydensha():
         or RailwayCategory.query.first().id
     )
 
+    region_id = request.form.get('region')
+
     if category_id == category_id_old:
-        company_id = request.form.get('company') or company_id_old
+        region_id = region_id or region_id_old
     else:
-        company_id = (
+        region_id = region_id or (
             RailwayInfo
             .query
             .filter_by(category_id=category_id)
             .first()
-            .company_id
+            .region_id
         )
 
-    if company_id == company_id_old:
-        region_id = request.form.get('region') or region_id_old
+    company_id = request.form.get('company')
+
+    if region_id == region_id_old:
+        company_id = company_id or company_id_old
     else:
-        region_id = (
+        company_id = company_id or (
             RailwayInfo
             .query
-            .filter_by(category_id=category_id, company_id=company_id)
+            .filter_by(category_id=category_id, region_id=region_id)
             .first()
-            .region_id
+            .company_id
         )
 
     form.category.query = RailwayCategory.query
@@ -361,7 +374,7 @@ def railway_infos_by_category():
     choices = {
         'regions': get_dropdown_choices(regions),
         'companies': get_dropdown_choices(companies),
-        'lines': get_dropdown_choices(lines)
+        'lines': get_dropdown_choices_no_blank(lines)
     }
 
     return jsonify(choices=choices)
@@ -394,7 +407,7 @@ def railway_infos_by_category_region():
 
     choices = {
         'companies': get_dropdown_choices(companies),
-        'lines': get_dropdown_choices(lines)
+        'lines': get_dropdown_choices_no_blank(lines)
     }
 
     return jsonify(choices=choices)
@@ -420,6 +433,6 @@ def railway_infos_by_category_region_company():
         )
     )
 
-    choices = {'lines': get_dropdown_choices(lines)}
+    choices = {'lines': get_dropdown_choices_no_blank(lines)}
 
     return jsonify(choices=choices)

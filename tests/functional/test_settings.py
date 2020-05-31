@@ -303,7 +303,6 @@ def test_fetch_railway_infos_by_category(client, login_client):
             {'value': 1, 'text': 'rail_company'},
         ],
         'lines': [
-            {'value': '__None', 'text': ''},
             {'value': 1, 'text': 'rail_line_1'}
         ]
     }
@@ -325,7 +324,6 @@ def test_fetch_railway_infos_by_category_region(client, login_client):
             {'value': 1, 'text': 'rail_company'},
         ],
         'lines': [
-            {'value': '__None', 'text': ''},
             {'value': 1, 'text': 'rail_line_1'}
         ]
     }
@@ -343,7 +341,6 @@ def test_fetch_railway_infos_by_category_region_company(client, login_client):
 
     expected = {
         'lines': [
-            {'value': '__None', 'text': ''},
             {'value': 1, 'text': 'rail_line_1'}
         ]
     }
