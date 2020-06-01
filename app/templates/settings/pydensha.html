@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+{% from "navbar.html" import navbar %}
+{% from "flash.html" import flash %}
+
+{% block content %}
+{{ navbar(current_user) }}
+<div class="container my-5">
+    {{ flash() }}
+    <form action="" method="post" novalidate>
+      {{ form.hidden_tag() }}
+      <div class="card mt-4">
+        <div class="card-header">Railway Information</div>
+        <div class="card-body">
+          <div class="form-group row">
+            {{ form.category.label(class_="col-lg-2 col-form-label") }}
+            <div class="col-lg-10">
+              {% if not form.category.errors %}
+              {{ form.category(class_="form-control") }}
+              {% else %}
+              {{ form.category(class_="form-control is-invalid") }}
+              {% endif %}
+              {% for error in form.category.errors %}
+              <div class="invalid-feedback">{{ error }}</div>
+              {% endfor %}
+            </div>
+          </div>
+          <div class="form-group row">
+            {{ form.region.label(class_="col-lg-2 col-form-label") }}
+            <div class="col-lg-10">
+              {% if not form.region.errors %}
+              {{ form.region(class_="form-control") }}
+              {% else %}
+              {{ form.region(class_="form-control is-invalid") }}
+              {% endif %}
+              {% for error in form.region.errors %}
+              <div class="invalid-feedback">{{ error }}</div>
+              {% endfor %}
+            </div>
+          </div>
+          <div class="form-group row">
+            {{ form.company.label(class_="col-lg-2 col-form-label") }}
+            <div class="col-lg-10">
+              {% if not form.company.errors %}
+              {{ form.company(class_="form-control") }}
+              {% else %}
+              {{ form.company(class_="form-control is-invalid") }}
+              {% endif %}
+              {% for error in form.company.errors %}
+              <div class="invalid-feedback">{{ error }}</div>
+              {% endfor %}
+            </div>
+          </div>
+          <div class="form-group row">
+            {{ form.line.label(class_="col-lg-2 col-form-label") }}
+            <div class="col-lg-10">
+              {% if not form.line.errors %}
+              {{ form.line(class_="form-control") }}
+              {% else %}
+              {{ form.line(class_="form-control is-invalid") }}
+              {% endif %}
+              {% for error in form.line.errors %}
+              <div class="invalid-feedback">{{ error }}</div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card mt-4">
+        <div class="card-header">Data Fetch Interval</div>
+        <div class="card-body text-center">
+          {{ form.fetch_intvl(id="fetch-intvl", class_="custom-range",
+                              min=10, max=60, step=5) }}
+          <output>
+            <span id="fetch-intvl-val"></span>
+            <span> minutes</span>
+          </output>
+        </div>
+      </div>
+      <div class="card mt-4">
+        <div class="card-header">Railway Status LED</div>
+        <div class="card-body">
+          <div class="form-group row">
+            {{ form.led_normal.label(class_="col-lg-2 col-form-label") }}
+            <div class="col-lg-10">
+              {% if not form.led_normal.errors %}
+              {{ form.led_normal(class_="form-control") }}
+              {% else %}
+              {{ form.led_normal(class_="form-control is-invalid") }}
+              {% endif %}
+              {% for error in form.led_normal.errors %}
+              <div class="invalid-feedback">{{ error }}</div>
+              {% endfor %}
+            </div>
+          </div>
+          <div class="form-group row">
+            {{ form.led_delayed.label(class_="col-lg-2 col-form-label") }}
+            <div class="col-lg-10">
+              {% if not form.led_delayed.errors %}
+              {{ form.led_delayed(class_="form-control") }}
+              {% else %}
+              {{ form.led_delayed(class_="form-control is-invalid") }}
+              {% endif %}
+              {% for error in form.led_delayed.errors %}
+              <div class="invalid-feedback">{{ error }}</div>
+              {% endfor %}
+            </div>
+          </div>
+          <div class="form-group row">
+            {{ form.led_other.label(class_="col-lg-2 col-form-label") }}
+            <div class="col-lg-10">
+              {% if not form.led_other.errors %}
+              {{ form.led_other(class_="form-control") }}
+              {% else %}
+              {{ form.led_other(class_="form-control is-invalid") }}
+              {% endif %}
+              {% for error in form.led_other.errors %}
+              <div class="invalid-feedback">{{ error }}</div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card mt-4">
+        <div class="card-header">LED Blink Duration</div>
+        <div class="card-body">
+          <div class="form-group row">
+            {{ form.blink_on_time.label(class_="col-lg-2 col-form-label") }}
+            <div class="col-lg-10">
+              {{ form.blink_on_time(id="blink-on-time", class_="custom-range",
+                                    min=1.0, max=5.0, step=0.5) }}
+              <output>
+                <span id="blink-on-time-val"></span>
+                <span> seconds</span>
+              </output>
+            </div>
+          </div>
+          <div class="form-group row">
+            {{ form.blink_off_time.label(class_="col-lg-2 col-form-label") }}
+            <div class="col-lg-10">
+              {{ form.blink_off_time(id="blink-off-time",
+                                     class_="custom-range",
+                                     min=1.0, max=5.0, step=0.5) }}
+              <output>
+                <span id="blink-off-time-val"></span>
+                <span> seconds</span>
+              </output>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card mt-4 mb-4">
+        <div class="card-header">LED Fade Duration</div>
+        <div class="card-body">
+          <div class="form-group row">
+            {{ form.fade_in_time.label(class_="col-lg-2 col-form-label") }}
+            <div class="col-lg-10">
+              {{ form.fade_in_time(id="fade-in-time", class_="custom-range",
+                                   min=1.0, max=5.0, step=0.5) }}
+              <output>
+                <span id="fade-in-time-val"></span>
+                <span> seconds</span>
+              </output>
+            </div>
+          </div>
+          <div class="form-group row">
+            {{ form.fade_out_time.label(class_="col-lg-2 col-form-label") }}
+            <div class="col-lg-10">
+              {{ form.fade_out_time(id="fade-out-time", class_="custom-range",
+                                    min=1.0, max=5.0, step=0.5) }}
+              <output>
+                <span id="fade-out-time-val"></span>
+                <span> seconds</span>
+              </output>
+            </div>
+          </div>
+        </div>
+      </div>
+      {{ form.submit(class_="btn btn-primary") }}
+    </form>
+</div>
+{% endblock %}
+
+{% block script %}
+<script type="module">
+  import {updateRailwayInfoDropdowns}
+  from '{{ url_for('static', filename='pydensha-settings.js') }}';
+  updateRailwayInfoDropdowns(
+    '{{ url_for('settings.railway_infos_by_category') }}',
+    '{{ url_for('settings.railway_infos_by_category_region') }}',
+    '{{ url_for('settings.railway_infos_by_category_region_company') }}',
+  );
+
+  import {outputSliderVal}
+  from '{{ url_for('static', filename='helper.js') }}';
+  outputSliderVal('fetch-intvl', 'fetch-intvl-val');
+  outputSliderVal('blink-on-time', 'blink-on-time-val');
+  outputSliderVal('blink-off-time', 'blink-off-time-val');
+  outputSliderVal('fade-in-time', 'fade-in-time-val');
+  outputSliderVal('fade-out-time', 'fade-out-time-val');
+</script>
+{% endblock %}

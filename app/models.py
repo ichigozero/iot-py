@@ -85,3 +85,55 @@ class PinpointLocation(db.Model):
 
     def __repr__(self):
         return '<PinpointLocation {}>'.format(self.name)
+
+
+class RailwayCategory(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), index=True)
+    infos = db.relationship('RailwayInfo', backref='category',
+                            lazy='dynamic')
+
+    def __repr__(self):
+        return '<RailwayCategory {}>'.format(self.name)
+
+
+class RailwayRegion(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), index=True)
+    infos = db.relationship('RailwayInfo', backref='region',
+                            lazy='dynamic')
+
+    def __repr__(self):
+        return '<RailwayRegion {}>'.format(self.name)
+
+
+class RailwayCompany(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), index=True)
+    infos = db.relationship('RailwayInfo', backref='company',
+                            lazy='dynamic')
+
+    def __repr__(self):
+        return '<RailwayCompany {}>'.format(self.name)
+
+
+class RailwayLine(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), index=True)
+    status_page_url = db.Column(db.String(64), index=True)
+    infos = db.relationship('RailwayInfo', backref='line',
+                            lazy='dynamic')
+
+    def __repr__(self):
+        return '<Railway {}>'.format(self.name)
+
+
+class RailwayInfo(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    category_id = db.Column(db.Integer, db.ForeignKey('railway_category.id'))
+    region_id = db.Column(db.Integer, db.ForeignKey('railway_region.id'))
+    company_id = db.Column(db.Integer, db.ForeignKey('railway_company.id'))
+    line_id = db.Column(db.Integer, db.ForeignKey('railway_line.id'))
+
+    __table_args__ = (
+        db.UniqueConstraint(category_id, region_id, company_id, line_id),)

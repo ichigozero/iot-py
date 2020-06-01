@@ -9,6 +9,11 @@ from app.models import (
     City,
     PinpointLocation,
     Prefecture,
+    RailwayCategory,
+    RailwayCompany,
+    RailwayInfo,
+    RailwayLine,
+    RailwayRegion,
     Region,
     Setting,
     User
@@ -124,6 +129,25 @@ def app_db():
     pinpoint_loc_1 = PinpointLocation(id=1, name='pinpoint_1', city=city_1)
     pinpoint_loc_2 = PinpointLocation(id=2, name='pinpoint_2', city=city_2)
 
+    railway_category = RailwayCategory(name='rail_category')
+    railway_region_1 = RailwayRegion(name='rail_region_1')
+    railway_region_2 = RailwayRegion(name='rail_region_2')
+    railway_company = RailwayCompany(name='rail_company')
+    railway_line_1 = RailwayLine(name='rail_line_1', status_page_url='url_1')
+    railway_line_2 = RailwayLine(name='rail_line_2', status_page_url='url_2')
+    railway_info_1 = RailwayInfo(
+        category=railway_category,
+        region=railway_region_1,
+        company=railway_company,
+        line=railway_line_1
+    )
+    railway_info_2 = RailwayInfo(
+        category=railway_category,
+        region=railway_region_2,
+        company=railway_company,
+        line=railway_line_2
+    )
+
     setting_1 = Setting(
         app='pytenki',
         value=json.dumps({
@@ -143,15 +167,41 @@ def app_db():
         })
     )
     setting_2 = Setting(
+        app='pydensha',
+        value=json.dumps({
+            'rail_info': {
+                'category_id': 1,
+                'region_id': 1,
+                'company_id': 1,
+                'line_ids': [1]
+            },
+            'led_duration': {
+                'blink_on_time': 1.0,
+                'blink_off_time': 1.0,
+                'fade_in_time': 1.0,
+                'fade_out_time': 1.0,
+            }
+        })
+    )
+    setting_3 = Setting(
         app='gpio',
         value=json.dumps({
-            'led': {
-                'fine': '2',
-                'cloud': '3',
-                'rain': '5',
-                'snow': '6'
+            'weather': {
+                'led': {
+                    'fine': '2',
+                    'cloud': '3',
+                    'rain': '5',
+                    'snow': '6',
+                },
+                'tts_button': '4'
             },
-            'tts_button': '4'
+            'train_info': {
+                'led': {
+                    'normal': '16',
+                    'delayed': '20',
+                    'other': '21'
+                },
+            }
         })
     )
 
@@ -164,8 +214,17 @@ def app_db():
         city_2,
         pinpoint_loc_1,
         pinpoint_loc_2,
+        railway_category,
+        railway_region_1,
+        railway_region_2,
+        railway_company,
+        railway_line_1,
+        railway_line_2,
+        railway_info_1,
+        railway_info_2,
         setting_1,
-        setting_2
+        setting_2,
+        setting_3
     ])
     db.session.commit()
     yield db

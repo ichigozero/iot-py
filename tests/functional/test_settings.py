@@ -187,3 +187,172 @@ def test_fetch_areas_by_city(client, login_client):
     }
 
     assert response.json['choices'] == expected
+
+
+def test_fetch_pydensha_settings_page(client, login_client):
+    assert not current_user.is_anonymous
+
+    response = client.get(url_for('settings.pydensha'))
+
+    assert response.status_code == 200
+    elements = (
+        b'<option selected value="1">rail_category</option>',
+        b'<option selected value="1">rail_region_1</option>',
+        b'<option value="2">rail_region_2</option>',
+        b'<option selected value="1">rail_company</option>',
+        b'<option selected value="1">rail_line_1</option>',
+        b'name="fetch_intvl" step="5" type="range" value="35"',
+        b'name="blink_on_time" step="0.5" type="range" value="1.0"',
+        b'name="blink_off_time" step="0.5" type="range" value="1.0"',
+        b'name="fade_in_time" step="0.5" type="range" value="1.0"',
+        b'name="fade_out_time" step="0.5" type="range" value="1.0"',
+        b'<option selected value="16">',
+        b'<option selected value="20">',
+        b'<option selected value="21">'
+    )
+    for element in elements:
+        assert element in response.data
+
+    assert b'<option value="2">rail_line_2</option>' not in response.data
+
+
+def test_update_pydensha_settings_with_null_values(client, login_client):
+    response = client.post(
+        url_for('settings.pydensha'),
+        data=dict(category='', region='',
+                  company='', line='',
+                  led_normal='', led_delayed='',
+                  led_other=''),
+        follow_redirects=True
+    )
+
+    assert response.status_code == 200
+    elements = (
+        b'"form-control is-invalid" id="category"',
+        b'"form-control is-invalid" id="company"',
+        b'"form-control is-invalid" id="region"',
+        b'"form-control is-invalid" id="line"',
+        b'"form-control is-invalid" id="led_normal"',
+        b'"form-control is-invalid" id="led_delayed"',
+        b'"form-control is-invalid" id="led_other"',
+    )
+    for element in elements:
+        assert element in response.data
+
+
+def test_update_pydensha_settings_with_duplicate_values(client, login_client):
+    response = client.post(
+        url_for('settings.pydensha'),
+        data=dict(category='1', region='1',
+                  company='1', line='1',
+                  led_normal='13', led_delayed='13',
+                  led_other='13'),
+        follow_redirects=True
+    )
+
+    assert response.status_code == 200
+    elements = (
+        b'"form-control is-invalid" id="led_delayed"',
+        b'"form-control is-invalid" id="led_other"',
+    )
+    for element in elements:
+        assert element in response.data
+
+
+def test_successful_pydensha_settings_update(mocker, client, login_client):
+    response = client.post(
+        url_for('settings.pydensha'),
+        data=dict(category='1', company='1',
+                  region='2', line='2',
+                  led_normal='13', led_delayed='19',
+                  led_other='26', fetch_intvl='10',
+                  blink_on_time='3.0', blink_off_time='2.0',
+                  fade_in_time='3.0', fade_out_time='2.0'),
+        follow_redirects=True
+    )
+
+    assert response.status_code == 200
+    elements = (
+        b'PyDensha Settings Have Been Updated Successfully',
+        b'<option selected value="1">rail_category</option>',
+        b'<option value="1">rail_region_1</option>',
+        b'<option selected value="2">rail_region_2</option>',
+        b'<option selected value="1">rail_company</option>',
+        b'<option selected value="2">rail_line_2</option>',
+        b'name="fetch_intvl" step="5" type="range" value="10"',
+        b'<option selected value="13">',
+        b'<option selected value="19">',
+        b'<option selected value="26">',
+        b'name="blink_on_time" step="0.5" type="range" value="3.0"',
+        b'name="blink_off_time" step="0.5" type="range" value="2.0"',
+        b'name="fade_in_time" step="0.5" type="range" value="3.0"',
+        b'name="fade_out_time" step="0.5" type="range" value="2.0"'
+    )
+    for element in elements:
+        assert element in response.data
+
+    assert b'<option value="1">rail_line_1</option>' not in response.data
+
+
+def test_fetch_railway_infos_by_category(client, login_client):
+    response = client.post(
+        url_for('settings.railway_infos_by_category'),
+        data=dict(category='1')
+    )
+
+    assert response.status_code == 200
+
+    expected = {
+        'regions': [
+            {'value': '__None', 'text': ''},
+            {'value': 1, 'text': 'rail_region_1'},
+            {'value': 2, 'text': 'rail_region_2'}
+        ],
+        'companies': [
+            {'value': '__None', 'text': ''},
+            {'value': 1, 'text': 'rail_company'},
+        ],
+        'lines': [
+            {'value': 1, 'text': 'rail_line_1'}
+        ]
+    }
+
+    assert response.json['choices'] == expected
+
+
+def test_fetch_railway_infos_by_category_region(client, login_client):
+    response = client.post(
+        url_for('settings.railway_infos_by_category_region'),
+        data=dict(category='1', region='1')
+    )
+
+    assert response.status_code == 200
+
+    expected = {
+        'companies': [
+            {'value': '__None', 'text': ''},
+            {'value': 1, 'text': 'rail_company'},
+        ],
+        'lines': [
+            {'value': 1, 'text': 'rail_line_1'}
+        ]
+    }
+
+    assert response.json['choices'] == expected
+
+
+def test_fetch_railway_infos_by_category_region_company(client, login_client):
+    response = client.post(
+        url_for('settings.railway_infos_by_category_region_company'),
+        data=dict(category='1', region='1', company='1')
+    )
+
+    assert response.status_code == 200
+
+    expected = {
+        'lines': [
+            {'value': 1, 'text': 'rail_line_1'}
+        ]
+    }
+
+    assert response.json['choices'] == expected
