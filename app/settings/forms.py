@@ -88,6 +88,8 @@ class PyDenshaForm(FlaskForm):
     led_normal = gpio_select_field(u'Normal')
     led_delayed = gpio_select_field(u'Delayed')
     led_other = gpio_select_field(u'Other')
+    blink_on_time = DecimalRangeField(u'On Time', places=1)
+    blink_off_time = DecimalRangeField(u'Off Time', places=1)
 
     submit = SubmitField('Apply')
 

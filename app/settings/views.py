@@ -221,6 +221,10 @@ def store_pydensha_form_data_to_db(form, gpio):
                 'line_ids': [data.id for data in form.line.data],
             },
             'fetch_intvl': form.fetch_intvl.data,
+            'led_duration': {
+                'blink_on_time': form.blink_on_time.data,
+                'blink_off_time': form.blink_off_time.data,
+            },
         }
     )
     Setting.update_setting(
@@ -266,7 +270,11 @@ def pydensha():
         fetch_intvl=get_dict_val(pydensha, ['fetch_intvl']) or 35,
         led_normal=get_dict_val(gpio, ['train_info', 'led', 'normal']),
         led_delayed=get_dict_val(gpio, ['train_info', 'led', 'delayed']),
-        led_other=get_dict_val(gpio, ['train_info', 'led', 'other'])
+        led_other=get_dict_val(gpio, ['train_info', 'led', 'other']),
+        blink_on_time=get_dict_val(
+                        pydensha, ['led_duration', 'blink_on_time']) or 3.0,
+        blink_off_time=get_dict_val(
+                        pydensha, ['led_duration', 'blink_off_time']) or 2.0,
     )
 
     category_id = (

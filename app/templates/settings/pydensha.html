@@ -120,6 +120,34 @@
           </div>
         </div>
       </div>
+      <div class="card mt-4">
+        <div class="card-header">LED Blink Duration</div>
+        <div class="card-body">
+          <div class="form-group row">
+            {{ form.blink_on_time.label(class_="col-lg-2 col-form-label") }}
+            <div class="col-lg-10">
+              {{ form.blink_on_time(id="blink-on-time", class_="custom-range",
+                                    min=1.0, max=5.0, step=0.5) }}
+              <output>
+                <span id="blink-on-time-val"></span>
+                <span> seconds</span>
+              </output>
+            </div>
+          </div>
+          <div class="form-group row">
+            {{ form.blink_off_time.label(class_="col-lg-2 col-form-label") }}
+            <div class="col-lg-10">
+              {{ form.blink_off_time(id="blink-off-time",
+                                     class_="custom-range",
+                                     min=1.0, max=5.0, step=0.5) }}
+              <output>
+                <span id="blink-off-time-val"></span>
+                <span> seconds</span>
+              </output>
+            </div>
+          </div>
+        </div>
+      </div>
       {{ form.submit(class_="btn btn-primary") }}
     </form>
 </div>
@@ -138,5 +166,7 @@
   import {outputSliderVal}
   from '{{ url_for('static', filename='helper.js') }}';
   outputSliderVal('fetch-intvl', 'fetch-intvl-val');
+  outputSliderVal('blink-on-time', 'blink-on-time-val');
+  outputSliderVal('blink-off-time', 'blink-off-time-val');
 </script>
 {% endblock %}

@@ -174,6 +174,10 @@ def app_db():
                 'region_id': 1,
                 'company_id': 1,
                 'line_ids': [1]
+            },
+            'led_duration': {
+                'blink_on_time': 1.0,
+                'blink_off_time': 1.0,
             }
         })
     )

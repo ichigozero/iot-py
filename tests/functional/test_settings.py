@@ -202,6 +202,8 @@ def test_fetch_pydensha_settings_page(client, login_client):
         b'<option selected value="1">rail_company</option>',
         b'<option selected value="1">rail_line_1</option>',
         b'name="fetch_intvl" step="5" type="range" value="35"',
+        b'name="blink_on_time" step="0.5" type="range" value="1.0"',
+        b'name="blink_off_time" step="0.5" type="range" value="1.0"',
         b'<option selected value="16">',
         b'<option selected value="20">',
         b'<option selected value="21">'
@@ -261,7 +263,8 @@ def test_successful_pydensha_settings_update(mocker, client, login_client):
         data=dict(category='1', company='1',
                   region='2', line='2',
                   led_normal='13', led_delayed='19',
-                  led_other='26', fetch_intvl='10'),
+                  led_other='26', fetch_intvl='10',
+                  blink_on_time='3.0', blink_off_time='2.0'),
         follow_redirects=True
     )
 
@@ -276,7 +279,9 @@ def test_successful_pydensha_settings_update(mocker, client, login_client):
         b'name="fetch_intvl" step="5" type="range" value="10"',
         b'<option selected value="13">',
         b'<option selected value="19">',
-        b'<option selected value="26">'
+        b'<option selected value="26">',
+        b'name="blink_on_time" step="0.5" type="range" value="3.0"',
+        b'name="blink_off_time" step="0.5" type="range" value="2.0"'
     )
     for element in elements:
         assert element in response.data
