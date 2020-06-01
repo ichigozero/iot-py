@@ -18,7 +18,7 @@ from app.models import (
     Setting,
     User
 )
-from app.tasks import PyTenkiTask
+from app.tasks import PyDenshaTask, PyTenkiTask
 from config import Config
 
 
@@ -71,10 +71,25 @@ def app(mocker):
                 {'time': '9',  'temp': '', 'weather': ''}
             ]
 
+    class MockRailDetails:
+        def fetch_parse_html_source(self, page_url):
+            pass
+
+        def get_line_kanji_name(self):
+            return 'Yamanote Line'
+
+        def get_last_updated_time(self):
+            return '2020-06-01 09:00'
+
+        def get_line_status(self):
+            return 'Delayed'
+
     mocker.patch('tenkihaxjp.ForecastSummary',
                  return_value=MockForecastSummary())
     mocker.patch('tenkihaxjp.ForecastDetails',
                  return_value=MockForecastDetails())
+    mocker.patch('traininfojp.RailDetails',
+                 return_value=MockRailDetails())
 
     Device.pin_factory = MockFactory()
 
@@ -112,6 +127,13 @@ def pytenki_task(app, app_db):
     yield pytenki_task
     pytenki_task.exit_thread.set()
     pytenki_task.pytenki._close_button()
+
+
+@pytest.fixture
+def pydensha_task(app, app_db):
+    pydensha_task = PyDenshaTask()
+    yield pydensha_task
+    pydensha_task.exit_thread.set()
 
 
 @pytest.fixture
