@@ -103,12 +103,16 @@ def app(mocker):
 @pytest.fixture
 def client(mocker, app, app_db):
     pytenki_task = PyTenkiTask()
+    pydensha_task = PyDenshaTask()
     mocker.patch('app.tasks.PyTenkiTask',
                  return_value=pytenki_task)
+    mocker.patch('app.tasks.PyDenshaTask',
+                 return_value=pydensha_task)
 
     yield app.test_client()
     pytenki_task.exit_thread.set()
     pytenki_task.pytenki._close_button()
+    pydensha_task.exit_thread.set()
 
 
 @pytest.fixture

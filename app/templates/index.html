@@ -78,6 +78,44 @@
     </div>
   </div>
 </div>
+<div class="container">
+  <div class="row">
+    <div class="col">
+      <div class="card border-primary">
+        <div
+          class="card-header text-white text-center bg-primary"
+        >路線情報</div>
+        <div class="card-body">
+          <div class="row table-responsive">
+            <table class="table table-bordered">
+              <tbody>
+                <tr>
+                  <th>路線</th>
+                  <th class="text-center">運行情報</th>
+                  <th class="text-center">最終更新日時</th>
+                </tr>
+                {% for key, value in pydensha_data.items() %}
+                <tr>
+                  <td id="rail-line-{{ loop.index }}">
+                    {{ value['kanji_name'] }}
+                  </td>
+                  <td id="rail-status-{{ loop.index }}">
+                    {{ value['line_status'] }}
+                  </td>
+                  <td id="rail-status-timestamp-{{ loop.index }}">
+                    {{ value['last_update'] }}
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 {% endblock %}
 
 {% block script %}

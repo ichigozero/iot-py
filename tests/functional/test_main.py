@@ -15,6 +15,12 @@ def test_fetch_index_page(client):
         b'<td id="weather-9"></td>',
         b'<td id="temp-1"></td>',
         b'<td id="temp-9"></td>',
+        b'<td id="rail-line-1">',
+        b'Yamanote Line',
+        b'<td id="rail-status-1">',
+        b'Delayed',
+        b'<td id="rail-status-timestamp-1">',
+        b'2020-06-01 09:00'
     )
     for element in elements:
         assert element in response.data
