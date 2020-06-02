@@ -24,6 +24,23 @@ function sse(streamURL) {
       updateContent('temp-' + (i + 1), data.fcast_24_hours[i]['temp']);
     }
   }, false);
+
+  eventSource.addEventListener('pydensha', function(event) {
+    const data = JSON.parse(event.data);
+
+    if (!data) {
+      return null;
+    }
+
+    let i = 0;
+    Object.keys(data).forEach(function(key) {
+      updateContent('rail-line-' + (i + 1), data[key]['kanji_name']);
+      updateContent('rail-status-' + (i + 1), data[key]['line_status']);
+      updateContent(
+          'rail-status-timestamp-' + (i + 1), data[key]['last_update']);
+      i++;
+    });
+  }, false);
 }
 
 function updateContent(elementID, value) {
