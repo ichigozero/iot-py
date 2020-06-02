@@ -1,3 +1,5 @@
+from flask_sse import sse
+
 SECONDS_IN_MIN = 60
 
 
@@ -27,8 +29,6 @@ def test_get_fetched_pytenki_data(mocker, pytenki_task):
                           'operate_all_weather_leds')
     spy_button = mocker.spy(pytenki_task.pytenki,
                             'tts_forecast_summary_after_button_press')
-
-    from flask_sse import sse
     spy_sse = mocker.spy(sse, 'publish')
 
     pytenki_task.init_task()
@@ -79,7 +79,9 @@ def test_init_pydensha_task(pydensha_task):
     assert pydensha_task.wait_time == 35 * SECONDS_IN_MIN
 
 
-def test_get_fetched_pydensha_data(pydensha_task):
+def test_get_fetched_pydensha_data(mocker, pydensha_task):
+    spy_sse = mocker.spy(sse, 'publish')
+
     pydensha_task.init_task()
     pydensha_task.start()
 
@@ -90,5 +92,6 @@ def test_get_fetched_pydensha_data(pydensha_task):
             'line_status': 'Delayed',
         },
     }
-
+    spy_sse.assert_called_once_with(pydensha_task.get_fetched_data(),
+                                    type='pydensha')
     assert pydensha_task.get_fetched_data() == expected

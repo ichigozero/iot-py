@@ -152,6 +152,12 @@ class PyDenshaTask(BackgroundTask):
             details.fetch_parse_html_source(line.status_page_url)
             self.rail_status_details.append(details)
 
+        from app import create_app
+
+        app = create_app()
+        with app.app_context():
+            sse.publish(self.get_fetched_data(), type='pydensha')
+
     def get_fetched_data(self):
         fetched_data = dict()
 
