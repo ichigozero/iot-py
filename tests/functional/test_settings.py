@@ -1,6 +1,8 @@
 from flask import url_for
 from flask_login import current_user
 
+import app
+
 
 def test_fetch_pytenki_settings_page(client, login_client):
     assert not current_user.is_anonymous
@@ -77,8 +79,6 @@ def test_update_pytenki_settings_with_duplicate_values(client, login_client):
 
 
 def test_successful_pytenki_settings_update(mocker, client, login_client):
-    import app
-
     spy_init_task = mocker.spy(app.pytenki_task, 'init_task')
     spy_restart = mocker.spy(app.pytenki_task, 'restart')
 
@@ -260,6 +260,9 @@ def test_update_pydensha_settings_with_duplicate_values(client, login_client):
 
 
 def test_successful_pydensha_settings_update(mocker, client, login_client):
+    spy_init_task = mocker.spy(app.pydensha_task, 'init_task')
+    spy_restart = mocker.spy(app.pydensha_task, 'restart')
+
     response = client.post(
         url_for('settings.pydensha'),
         data=dict(category='1', company='1',
@@ -270,6 +273,9 @@ def test_successful_pydensha_settings_update(mocker, client, login_client):
                   fade_in_time='3.0', fade_out_time='2.0'),
         follow_redirects=True
     )
+
+    spy_init_task.assert_called_once()
+    spy_restart.assert_called_once()
 
     assert response.status_code == 200
     elements = (
