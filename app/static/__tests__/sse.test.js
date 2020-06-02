@@ -232,7 +232,7 @@ describe('Server-Sent Events test suite', () => {
     expect(document.body.innerHTML).toBe(expected);
   });
 
-  test('Process pydensha SSE with streamed data', () => {
+  test('Update (and delete) rail-info table rows with SSE data', () => {
     const mockEvt = {
       'data': JSON.stringify({
         '1': {
@@ -249,7 +249,12 @@ describe('Server-Sent Events test suite', () => {
     };
 
     document.body.innerHTML =
-      '<table><tbody>' +
+      '<table id="rail-info"><tbody>' +
+      '<tr>' +
+      '<th></th>' +
+      '<th></th>' +
+      '<th></th>' +
+      '</tr>' +
       '<tr>' +
       '<td id="rail-line-1"></td>' +
       '<td id="rail-status-1"></td>' +
@@ -260,10 +265,79 @@ describe('Server-Sent Events test suite', () => {
       '<td id="rail-status-2"></td>' +
       '<td id="rail-status-timestamp-2"></td>' +
       '</tr>' +
+      '<tr>' +
+      '<td id="rail-line-3"></td>' +
+      '<td id="rail-status-3"></td>' +
+      '<td id="rail-status-timestamp-3"></td>' +
+      '</tr>' +
      '</tbody></table>';
 
     const expected =
-      '<table><tbody>' +
+      '<table id="rail-info"><tbody>' +
+      '<tr>' +
+      '<th></th>' +
+      '<th></th>' +
+      '<th></th>' +
+      '</tr>' +
+      '<tr>' +
+      '<td id="rail-line-1">Yamanote Line</td>' +
+      '<td id="rail-status-1">Delayed</td>' +
+      '<td id="rail-status-timestamp-1">2020-06-01 09:00</td>' +
+      '</tr>' +
+      '<tr>' +
+      '<td id="rail-line-2">Tokaido Line</td>' +
+      '<td id="rail-status-2">Normal operation</td>' +
+      '<td id="rail-status-timestamp-2">2020-06-01 10:00</td>' +
+      '</tr>' +
+      '</tbody></table>';
+
+    mockEvtSrc.addEventListener.mockImplementation((event, handler) => {
+      if (event === 'pydensha') {
+        handler(mockEvt);
+      }
+    });
+
+    sse('/stream');
+    expect(document.body.innerHTML).toBe(expected);
+  });
+
+  test('Update (and add) rail-info table rows with SSE data', () => {
+    const mockEvt = {
+      'data': JSON.stringify({
+        '1': {
+          'kanji_name': 'Yamanote Line',
+          'last_update': '2020-06-01 09:00',
+          'line_status': 'Delayed',
+        },
+        '2': {
+          'kanji_name': 'Tokaido Line',
+          'last_update': '2020-06-01 10:00',
+          'line_status': 'Normal operation',
+        },
+      }),
+    };
+
+    document.body.innerHTML =
+      '<table id="rail-info"><tbody>' +
+      '<tr>' +
+      '<th></th>' +
+      '<th></th>' +
+      '<th></th>' +
+      '</tr>' +
+      '<tr>' +
+      '<td id="rail-line-1"></td>' +
+      '<td id="rail-status-1"></td>' +
+      '<td id="rail-status-timestamp-1"></td>' +
+      '</tr>' +
+     '</tbody></table>';
+
+    const expected =
+      '<table id="rail-info"><tbody>' +
+      '<tr>' +
+      '<th></th>' +
+      '<th></th>' +
+      '<th></th>' +
+      '</tr>' +
       '<tr>' +
       '<td id="rail-line-1">Yamanote Line</td>' +
       '<td id="rail-status-1">Delayed</td>' +

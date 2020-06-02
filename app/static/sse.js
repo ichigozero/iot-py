@@ -32,12 +32,33 @@ function sse(streamURL) {
       return null;
     }
 
-    let i = 0;
-    Object.keys(data).forEach(function(key) {
-      updateContent('rail-line-' + (i + 1), data[key]['kanji_name']);
-      updateContent('rail-status-' + (i + 1), data[key]['line_status']);
-      updateContent(
-          'rail-status-timestamp-' + (i + 1), data[key]['last_update']);
+    const table = document.getElementById('rail-info');
+    const dataKeys = Object.keys(data);
+    const lengthDiff = table.rows.length - dataKeys.length - 1;
+
+    if (lengthDiff > 0) {
+      for (let i = 0; i < lengthDiff; i++) {
+        table.deleteRow(i + dataKeys.length + 1);
+      }
+    } else if (lengthDiff < 0) {
+      for (let i = 0; i < Math.abs(lengthDiff); i++) {
+        const index = i + table.rows.length;
+        const row = table.insertRow(index);
+        const cell1 = row.insertCell(0);
+        const cell2 = row.insertCell(1);
+        const cell3 = row.insertCell(2);
+
+        cell1.id = 'rail-line-' + index;
+        cell2.id = 'rail-status-' + index;
+        cell3.id = 'rail-status-timestamp-' + index;
+      }
+    }
+
+    let i = 1;
+    dataKeys.forEach(function(key) {
+      updateContent('rail-line-' + i, data[key]['kanji_name']);
+      updateContent('rail-status-' + i, data[key]['line_status']);
+      updateContent('rail-status-timestamp-' + i, data[key]['last_update']);
       i++;
     });
   }, false);
