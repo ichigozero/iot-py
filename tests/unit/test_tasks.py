@@ -1,5 +1,9 @@
-def test_init_task(mocker, pytenki_task):
-    SECONDS_IN_MIN = 60
+from flask_sse import sse
+
+SECONDS_IN_MIN = 60
+
+
+def test_init_pytenki_task(mocker, pytenki_task):
 
     spy_assign_leds = mocker.spy(pytenki_task.pytenki, 'assign_leds')
     spy_assign_btn = mocker.spy(pytenki_task.pytenki, 'assign_button')
@@ -16,7 +20,7 @@ def test_init_task(mocker, pytenki_task):
     spy_assign_btn.assert_called_once_with('4')
 
 
-def test_get_fetched_data(mocker, pytenki_task):
+def test_get_fetched_pytenki_data(mocker, pytenki_task):
     spy_summary = mocker.spy(pytenki_task.fcast_summary,
                              'fetch_weather_data')
     spy_details = mocker.spy(pytenki_task.fcast_details,
@@ -25,8 +29,6 @@ def test_get_fetched_data(mocker, pytenki_task):
                           'operate_all_weather_leds')
     spy_button = mocker.spy(pytenki_task.pytenki,
                             'tts_forecast_summary_after_button_press')
-
-    from flask_sse import sse
     spy_sse = mocker.spy(sse, 'publish')
 
     pytenki_task.init_task()
@@ -69,3 +71,34 @@ def test_get_fetched_data(mocker, pytenki_task):
                                      fade_in_time=1.0, fade_out_time=1.0)
     spy_button.assert_called_once()
     assert pytenki_task.get_fetched_data() == expected
+
+
+def test_init_pydensha_task(mocker, pydensha_task):
+    spy = mocker.spy(pydensha_task.pydensha, 'assign_led')
+
+    pydensha_task.init_task()
+    assert pydensha_task.settings is not None
+    assert pydensha_task.wait_time == 35 * SECONDS_IN_MIN
+
+    spy.assert_called_once_with({'red': '16', 'green': '20', 'blue': '21'})
+
+
+def test_get_fetched_pydensha_data(mocker, pydensha_task):
+    spy_led = mocker.spy(pydensha_task.pydensha, 'operate_led')
+    spy_sse = mocker.spy(sse, 'publish')
+
+    pydensha_task.init_task()
+    pydensha_task.start()
+
+    expected = {
+        '1': {
+            'kanji_name': 'Yamanote Line',
+            'last_update': '2020-06-01 09:00',
+            'line_status': 'Delayed',
+        },
+    }
+    spy_sse.assert_called_once_with(pydensha_task.get_fetched_data(),
+                                    type='pydensha')
+    spy_led.assert_called_once_with(train_infos=['Delayed'], on_time=1.0,
+                                    off_time=1.0)
+    assert pydensha_task.get_fetched_data() == expected

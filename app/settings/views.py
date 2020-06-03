@@ -40,9 +40,9 @@ def store_pytenki_form_data_to_db(form, gpio):
         }
     )
 
-    led_normal = get_dict_val(gpio, ['train_info', 'led', 'normal'])
-    led_delayed = get_dict_val(gpio, ['train_info', 'led', 'delayed'])
-    led_other = get_dict_val(gpio, ['train_info', 'led', 'other'])
+    led_red = get_dict_val(gpio, ['train_info', 'led', 'red'])
+    led_green = get_dict_val(gpio, ['train_info', 'led', 'green'])
+    led_blue = get_dict_val(gpio, ['train_info', 'led', 'blue'])
 
     Setting.update_setting(
         app='gpio',
@@ -58,9 +58,9 @@ def store_pytenki_form_data_to_db(form, gpio):
             },
             'train_info': {
                 'led': {
-                    'normal': led_normal,
-                    'delayed': led_delayed,
-                    'other': led_other
+                    'red': led_red,
+                    'green': led_green,
+                    'blue': led_blue
                 },
                 'tts_button': form.tts_button.data
             },
@@ -243,9 +243,9 @@ def store_pydensha_form_data_to_db(form, gpio):
             },
             'train_info': {
                 'led': {
-                    'normal': form.led_normal.data,
-                    'delayed': form.led_delayed.data,
-                    'other': form.led_other.data
+                    'red': form.led_red.data,
+                    'green': form.led_blue.data,
+                    'blue': form.led_green.data
                 }
             }
         }
@@ -270,9 +270,9 @@ def pydensha():
         line=[RailwayLine.query.get(id)
               for id in line_ids_old if line_ids_old],
         fetch_intvl=get_dict_val(pydensha, ['fetch_intvl']) or 35,
-        led_normal=get_dict_val(gpio, ['train_info', 'led', 'normal']),
-        led_delayed=get_dict_val(gpio, ['train_info', 'led', 'delayed']),
-        led_other=get_dict_val(gpio, ['train_info', 'led', 'other']),
+        led_red=get_dict_val(gpio, ['train_info', 'led', 'red']),
+        led_green=get_dict_val(gpio, ['train_info', 'led', 'green']),
+        led_blue=get_dict_val(gpio, ['train_info', 'led', 'blue']),
         blink_on_time=get_dict_val(
                         pydensha, ['led_duration', 'blink_on_time']) or 3.0,
         blink_off_time=get_dict_val(
@@ -345,6 +345,10 @@ def pydensha():
     if form.validate_on_submit():
         store_pydensha_form_data_to_db(form, gpio)
         db.session.commit()
+
+        app.pydensha_task.init_task()
+        app.pydensha_task.restart()
+
         flash('PyDensha Settings Have Been Updated Successfully', 'success')
         return redirect(url_for('settings.pydensha'))
 

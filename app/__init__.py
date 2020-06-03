@@ -11,6 +11,7 @@ migrate = Migrate()
 login = LoginManager()
 login.login_view = 'login'
 pytenki_task = None
+pydensha_task = None
 
 
 def create_app(class_config=Config):

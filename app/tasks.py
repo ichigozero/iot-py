@@ -2,11 +2,17 @@ import functools
 import threading
 
 import tenkihaxjp
+import traininfojp
 from flask_sse import sse
+from pydensha import PyDensha
 from pytenki import PyTenki
 
-from app.models import Setting
+from app import db
+from app.models import RailwayLine, Setting
 from app.helper import get_dict_val
+
+
+SECONDS_IN_MIN = 60
 
 
 def wait_event(func):
@@ -54,7 +60,6 @@ class PyTenkiTask(BackgroundTask):
         self.settings = None
 
     def init_task(self):
-        SECONDS_IN_MIN = 60
         self.settings = Setting.load_setting('pytenki')
         gpio = Setting.load_setting('gpio')
 
@@ -117,3 +122,73 @@ class PyTenkiTask(BackgroundTask):
                                   .get_3_hourly_forecasts_for_next_24_hours(),
             'fcast_loc': fcast_loc
         }
+
+
+class PyDenshaTask(BackgroundTask):
+    def __init__(self):
+        super().__init__()
+        self.rail_status_details = list()
+        self.pydensha = PyDensha()
+        self.rail_lines = None
+        self.settings = None
+
+    def init_task(self):
+        self.settings = Setting.load_setting('pydensha')
+        gpio = Setting.load_setting('gpio')
+
+        fetch_intvl = get_dict_val(self.settings, ['fetch_intvl']) or 35
+        self.wait_time = fetch_intvl * SECONDS_IN_MIN
+
+        self.pydensha._close_led()
+
+        led_pins = get_dict_val(gpio, ['train_info', 'led'])
+        self.pydensha.assign_led(led_pins)
+
+        line_ids = get_dict_val(self.settings, ['rail_info', 'line_ids'])
+        self.rail_lines = (
+            db.session
+            .query(RailwayLine)
+            .filter(RailwayLine.id.in_(line_ids))
+            .all()
+        )
+
+        self.rail_status_details.clear()
+
+        for line in self.rail_lines:
+            self.rail_status_details.append(traininfojp.RailDetails())
+
+    @wait_event
+    def _fetch_data(self):
+        train_infos = list()
+
+        for idx, line in enumerate(self.rail_lines):
+            self.rail_status_details[idx].fetch_parse_html_source(
+                line.status_page_url)
+            train_infos.append(
+                self.rail_status_details[idx].get_line_status())
+
+        self.pydensha.operate_led(
+            train_infos=train_infos,
+            on_time=get_dict_val(
+                self.settings, ['led_duration', 'blink_on_time']),
+            off_time=get_dict_val(
+                self.settings, ['led_duration', 'blink_off_time'])
+        )
+
+        from app import create_app
+
+        app = create_app()
+        with app.app_context():
+            sse.publish(self.get_fetched_data(), type='pydensha')
+
+    def get_fetched_data(self):
+        fetched_data = dict()
+
+        for idx, details in enumerate(self.rail_status_details, start=1):
+            fetched_data[str(idx)] = {
+                'kanji_name':  details.get_line_kanji_name(),
+                'last_update': details.get_last_updated_time(),
+                'line_status': details.get_line_status(),
+            }
+
+        return fetched_data
