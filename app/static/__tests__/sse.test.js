@@ -240,11 +240,6 @@ describe('Server-Sent Events test suite', () => {
           'last_update': '2020-06-01 09:00',
           'line_status': 'Delayed',
         },
-        '2': {
-          'kanji_name': 'Tokaido Line',
-          'last_update': '2020-06-01 10:00',
-          'line_status': 'Normal operation',
-        },
       }),
     };
 
@@ -256,9 +251,9 @@ describe('Server-Sent Events test suite', () => {
       '<th></th>' +
       '</tr>' +
       '<tr>' +
-      '<td id="rail-line-1"></td>' +
-      '<td id="rail-status-1"></td>' +
-      '<td id="rail-status-timestamp-1"></td>' +
+      '<td id="rail-line-1">Tokaido Line</td>' +
+      '<td id="rail-status-1">2020-06-01 10:00</td>' +
+      '<td id="rail-status-timestamp-1">Normal operation</td>' +
       '</tr>' +
       '<tr>' +
       '<td id="rail-line-2"></td>' +
@@ -283,11 +278,6 @@ describe('Server-Sent Events test suite', () => {
       '<td id="rail-line-1">Yamanote Line</td>' +
       '<td id="rail-status-1">Delayed</td>' +
       '<td id="rail-status-timestamp-1">2020-06-01 09:00</td>' +
-      '</tr>' +
-      '<tr>' +
-      '<td id="rail-line-2">Tokaido Line</td>' +
-      '<td id="rail-status-2">Normal operation</td>' +
-      '<td id="rail-status-timestamp-2">2020-06-01 10:00</td>' +
       '</tr>' +
       '</tbody></table>';
 
@@ -314,6 +304,11 @@ describe('Server-Sent Events test suite', () => {
           'last_update': '2020-06-01 10:00',
           'line_status': 'Normal operation',
         },
+        '3': {
+          'kanji_name': 'Keihin Tohoku Line',
+          'last_update': '2020-06-01 10:00',
+          'line_status': 'Normal operation',
+        },
       }),
     };
 
@@ -347,6 +342,11 @@ describe('Server-Sent Events test suite', () => {
       '<td id="rail-line-2">Tokaido Line</td>' +
       '<td id="rail-status-2">Normal operation</td>' +
       '<td id="rail-status-timestamp-2">2020-06-01 10:00</td>' +
+      '</tr>' +
+      '<tr>' +
+      '<td id="rail-line-3">Keihin Tohoku Line</td>' +
+      '<td id="rail-status-3">Normal operation</td>' +
+      '<td id="rail-status-timestamp-3">2020-06-01 10:00</td>' +
       '</tr>' +
       '</tbody></table>';
 

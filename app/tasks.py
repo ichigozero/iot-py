@@ -154,15 +154,18 @@ class PyDenshaTask(BackgroundTask):
 
         self.rail_status_details.clear()
 
+        for line in self.rail_lines:
+            self.rail_status_details.append(traininfojp.RailDetails())
+
     @wait_event
     def _fetch_data(self):
         train_infos = list()
 
-        for line in self.rail_lines:
-            details = traininfojp.RailDetails()
-            details.fetch_parse_html_source(line.status_page_url)
-            self.rail_status_details.append(details)
-            train_infos.append(details.get_line_status())
+        for idx, line in enumerate(self.rail_lines):
+            self.rail_status_details[idx].fetch_parse_html_source(
+                line.status_page_url)
+            train_infos.append(
+                self.rail_status_details[idx].get_line_status())
 
         self.pydensha.operate_led(
             train_infos=train_infos,

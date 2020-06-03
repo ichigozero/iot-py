@@ -38,11 +38,11 @@ function sse(streamURL) {
 
     if (lengthDiff > 0) {
       for (let i = 0; i < lengthDiff; i++) {
-        table.deleteRow(i + dataKeys.length + 1);
+        table.deleteRow(dataKeys.length + 1);
       }
     } else if (lengthDiff < 0) {
       for (let i = 0; i < Math.abs(lengthDiff); i++) {
-        const index = i + table.rows.length;
+        const index = table.rows.length;
         const row = table.insertRow(index);
         const cell1 = row.insertCell(0);
         const cell2 = row.insertCell(1);
