@@ -187,16 +187,6 @@ def areas_by_city():
 
 def get_dropdown_choices(tables):
     choices = list()
-    choices.append({'value': '__None', 'text': ''})
-
-    for table in tables:
-        choices.append({'value': table.id, 'text': table.name})
-
-    return choices
-
-
-def get_dropdown_choices_no_blank(tables):
-    choices = list()
 
     for table in tables:
         choices.append({'value': table.id, 'text': table.name})
@@ -386,7 +376,7 @@ def railway_infos_by_category():
     choices = {
         'regions': get_dropdown_choices(regions),
         'companies': get_dropdown_choices(companies),
-        'lines': get_dropdown_choices_no_blank(lines)
+        'lines': get_dropdown_choices(lines)
     }
 
     return jsonify(choices=choices)
@@ -419,7 +409,7 @@ def railway_infos_by_category_region():
 
     choices = {
         'companies': get_dropdown_choices(companies),
-        'lines': get_dropdown_choices_no_blank(lines)
+        'lines': get_dropdown_choices(lines)
     }
 
     return jsonify(choices=choices)
@@ -445,6 +435,6 @@ def railway_infos_by_category_region_company():
         )
     )
 
-    choices = {'lines': get_dropdown_choices_no_blank(lines)}
+    choices = {'lines': get_dropdown_choices(lines)}
 
     return jsonify(choices=choices)

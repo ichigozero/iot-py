@@ -28,7 +28,6 @@ def query_select_field(field_name):
     return QuerySelectField(
         field_name,
         get_label='name',
-        allow_blank=True,
         validators=[DataRequired()]
     )
 

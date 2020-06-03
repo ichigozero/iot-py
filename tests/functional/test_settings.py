@@ -130,17 +130,14 @@ def test_fetch_areas_by_region(client, login_client):
 
     expected = {
         'prefectures': [
-            {'value': '__None', 'text': ''},
             {'value': 1, 'text': 'prefecture_1'},
             {'value': 2, 'text': 'prefecture_2'}
         ],
         'cities': [
-            {'value': '__None', 'text': ''},
             {'value': 1, 'text': 'city_1'},
             {'value': 2, 'text': 'city_2'}
         ],
         'pinpoints': [
-            {'value': '__None', 'text': ''},
             {'value': 1, 'text': 'pinpoint_1'}
         ]
     }
@@ -158,12 +155,10 @@ def test_fetch_areas_by_prefecture(client, login_client):
 
     expected = {
         'cities': [
-            {'value': '__None', 'text': ''},
             {'value': 1, 'text': 'city_1'},
             {'value': 2, 'text': 'city_2'}
         ],
         'pinpoints': [
-            {'value': '__None', 'text': ''},
             {'value': 1, 'text': 'pinpoint_1'}
         ]
     }
@@ -181,7 +176,6 @@ def test_fetch_areas_by_city(client, login_client):
 
     expected = {
         'pinpoints': [
-            {'value': '__None', 'text': ''},
             {'value': 1, 'text': 'pinpoint_1'}
         ]
     }
@@ -305,12 +299,10 @@ def test_fetch_railway_infos_by_category(client, login_client):
 
     expected = {
         'regions': [
-            {'value': '__None', 'text': ''},
             {'value': 1, 'text': 'rail_region_1'},
             {'value': 2, 'text': 'rail_region_2'}
         ],
         'companies': [
-            {'value': '__None', 'text': ''},
             {'value': 1, 'text': 'rail_company'},
         ],
         'lines': [
@@ -331,7 +323,6 @@ def test_fetch_railway_infos_by_category_region(client, login_client):
 
     expected = {
         'companies': [
-            {'value': '__None', 'text': ''},
             {'value': 1, 'text': 'rail_company'},
         ],
         'lines': [
