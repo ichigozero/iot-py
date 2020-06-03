@@ -54,9 +54,9 @@
             {{ form.line.label(class_="col-lg-2 col-form-label") }}
             <div class="col-lg-10">
               {% if not form.line.errors %}
-              {{ form.line(class_="form-control") }}
+              {{ form.line(class_="form-control", size=12) }}
               {% else %}
-              {{ form.line(class_="form-control is-invalid") }}
+              {{ form.line(class_="form-control is-invalid", size=12) }}
               {% endif %}
               {% for error in form.line.errors %}
               <div class="invalid-feedback">{{ error }}</div>
