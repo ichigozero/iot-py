@@ -73,13 +73,18 @@ def test_get_fetched_pytenki_data(mocker, pytenki_task):
     assert pytenki_task.get_fetched_data() == expected
 
 
-def test_init_pydensha_task(pydensha_task):
+def test_init_pydensha_task(mocker, pydensha_task):
+    spy = mocker.spy(pydensha_task.pydensha, 'assign_led')
+
     pydensha_task.init_task()
     assert pydensha_task.settings is not None
     assert pydensha_task.wait_time == 35 * SECONDS_IN_MIN
 
+    spy.assert_called_once_with({'red': '16', 'green': '20', 'blue': '21'})
+
 
 def test_get_fetched_pydensha_data(mocker, pydensha_task):
+    spy_led = mocker.spy(pydensha_task.pydensha, 'operate_led')
     spy_sse = mocker.spy(sse, 'publish')
 
     pydensha_task.init_task()
@@ -94,4 +99,6 @@ def test_get_fetched_pydensha_data(mocker, pydensha_task):
     }
     spy_sse.assert_called_once_with(pydensha_task.get_fetched_data(),
                                     type='pydensha')
+    spy_led.assert_called_once_with(train_infos=['Delayed'], on_time=1.0,
+                                    off_time=1.0)
     assert pydensha_task.get_fetched_data() == expected

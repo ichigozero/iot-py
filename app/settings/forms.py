@@ -85,9 +85,9 @@ class PyDenshaForm(FlaskForm):
     region = query_select_field(u'Region')
     line = query_select_multiple_field(u'Line')
     fetch_intvl = IntegerRangeField(u'Data Fetch Interval')
-    led_normal = gpio_select_field(u'Normal')
-    led_delayed = gpio_select_field(u'Delayed')
-    led_other = gpio_select_field(u'Other')
+    led_red = gpio_select_field(u'Red')
+    led_green = gpio_select_field(u'Green')
+    led_blue = gpio_select_field(u'Blue')
     blink_on_time = DecimalRangeField(u'On Time', places=1)
     blink_off_time = DecimalRangeField(u'Off Time', places=1)
     fade_in_time = DecimalRangeField(u'Fade In Time', places=1)
@@ -103,8 +103,8 @@ class PyDenshaForm(FlaskForm):
         result = True
         message = 'Unable to assign GPIO pin more than once at a time'
 
-        for field in [self.led_normal, self.led_delayed,
-                      self.led_other]:
+        for field in [self.led_red, self.led_green,
+                      self.led_blue]:
             if field.data in seen:
                 field.errors.append(message)
                 result = False

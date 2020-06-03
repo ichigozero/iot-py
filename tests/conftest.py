@@ -223,9 +223,9 @@ def app_db():
             },
             'train_info': {
                 'led': {
-                    'normal': '16',
-                    'delayed': '20',
-                    'other': '21'
+                    'red': '16',
+                    'green': '20',
+                    'blue': '21'
                 },
             }
         })

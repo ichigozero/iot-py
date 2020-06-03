@@ -4,6 +4,7 @@ import threading
 import tenkihaxjp
 import traininfojp
 from flask_sse import sse
+from pydensha import PyDensha
 from pytenki import PyTenki
 
 from app import db
@@ -127,13 +128,21 @@ class PyDenshaTask(BackgroundTask):
     def __init__(self):
         super().__init__()
         self.rail_status_details = list()
+        self.pydensha = PyDensha()
         self.rail_lines = None
         self.settings = None
 
     def init_task(self):
         self.settings = Setting.load_setting('pydensha')
+        gpio = Setting.load_setting('gpio')
+
         fetch_intvl = get_dict_val(self.settings, ['fetch_intvl']) or 35
         self.wait_time = fetch_intvl * SECONDS_IN_MIN
+
+        self.pydensha._close_led()
+
+        led_pins = get_dict_val(gpio, ['train_info', 'led'])
+        self.pydensha.assign_led(led_pins)
 
         line_ids = get_dict_val(self.settings, ['rail_info', 'line_ids'])
         self.rail_lines = (
@@ -147,10 +156,21 @@ class PyDenshaTask(BackgroundTask):
 
     @wait_event
     def _fetch_data(self):
+        train_infos = list()
+
         for line in self.rail_lines:
             details = traininfojp.RailDetails()
             details.fetch_parse_html_source(line.status_page_url)
             self.rail_status_details.append(details)
+            train_infos.append(details.get_line_status())
+
+        self.pydensha.operate_led(
+            train_infos=train_infos,
+            on_time=get_dict_val(
+                self.settings, ['led_duration', 'blink_on_time']),
+            off_time=get_dict_val(
+                self.settings, ['led_duration', 'blink_off_time'])
+        )
 
         from app import create_app
 

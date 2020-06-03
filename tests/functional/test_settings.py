@@ -221,8 +221,8 @@ def test_update_pydensha_settings_with_null_values(client, login_client):
         url_for('settings.pydensha'),
         data=dict(category='', region='',
                   company='', line='',
-                  led_normal='', led_delayed='',
-                  led_other=''),
+                  led_red='', led_green='',
+                  led_blue=''),
         follow_redirects=True
     )
 
@@ -232,9 +232,9 @@ def test_update_pydensha_settings_with_null_values(client, login_client):
         b'"form-control is-invalid" id="company"',
         b'"form-control is-invalid" id="region"',
         b'"form-control is-invalid" id="line"',
-        b'"form-control is-invalid" id="led_normal"',
-        b'"form-control is-invalid" id="led_delayed"',
-        b'"form-control is-invalid" id="led_other"',
+        b'"form-control is-invalid" id="led_red"',
+        b'"form-control is-invalid" id="led_green"',
+        b'"form-control is-invalid" id="led_blue"',
     )
     for element in elements:
         assert element in response.data
@@ -245,15 +245,15 @@ def test_update_pydensha_settings_with_duplicate_values(client, login_client):
         url_for('settings.pydensha'),
         data=dict(category='1', region='1',
                   company='1', line='1',
-                  led_normal='13', led_delayed='13',
-                  led_other='13'),
+                  led_red='13', led_green='13',
+                  led_blue='13'),
         follow_redirects=True
     )
 
     assert response.status_code == 200
     elements = (
-        b'"form-control is-invalid" id="led_delayed"',
-        b'"form-control is-invalid" id="led_other"',
+        b'"form-control is-invalid" id="led_green"',
+        b'"form-control is-invalid" id="led_blue"',
     )
     for element in elements:
         assert element in response.data
@@ -267,8 +267,8 @@ def test_successful_pydensha_settings_update(mocker, client, login_client):
         url_for('settings.pydensha'),
         data=dict(category='1', company='1',
                   region='2', line='2',
-                  led_normal='13', led_delayed='19',
-                  led_other='26', fetch_intvl='10',
+                  led_red='13', led_green='19',
+                  led_blue='26', fetch_intvl='10',
                   blink_on_time='3.0', blink_off_time='2.0',
                   fade_in_time='3.0', fade_out_time='2.0'),
         follow_redirects=True
