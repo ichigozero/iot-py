@@ -242,8 +242,8 @@ def store_pydensha_form_data_to_db(form, gpio):
             'train_info': {
                 'led': {
                     'red': form.led_red.data,
-                    'green': form.led_blue.data,
-                    'blue': form.led_green.data
+                    'green': form.led_green.data,
+                    'blue': form.led_blue.data
                 }
             }
         }
