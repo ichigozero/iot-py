@@ -224,8 +224,6 @@ def store_pydensha_form_data_to_db(form, gpio):
             'led_duration': {
                 'blink_on_time': form.blink_on_time.data,
                 'blink_off_time': form.blink_off_time.data,
-                'fade_in_time': form.fade_in_time.data,
-                'fade_out_time': form.fade_out_time.data,
             },
         }
     )
@@ -276,11 +274,7 @@ def pydensha():
         blink_on_time=get_dict_val(
                         pydensha, ['led_duration', 'blink_on_time']) or 3.0,
         blink_off_time=get_dict_val(
-                        pydensha, ['led_duration', 'blink_off_time']) or 2.0,
-        fade_in_time=get_dict_val(
-                        pydensha, ['led_duration', 'fade_in_time']) or 3.0,
-        fade_out_time=get_dict_val(
-                        pydensha, ['led_duration', 'fade_out_time']) or 2.0
+                        pydensha, ['led_duration', 'blink_off_time']) or 2.0
     )
 
     category_id = (
