@@ -7,7 +7,7 @@ from app.auth.forms import LoginForm
 from app.models import User
 
 
-@bp.route('/login', methods=['GET', 'POST'])
+@bp.route('/admin', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('main.index'))
@@ -29,7 +29,7 @@ def login():
 
         return redirect(next_page)
 
-    return render_template('auth/login.html', title='Login', form=form)
+    return render_template('auth/login.html', title='Admin Login', form=form)
 
 
 @bp.route('/logout')
