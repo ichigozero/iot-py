@@ -187,16 +187,6 @@ def areas_by_city():
 
 def get_dropdown_choices(tables):
     choices = list()
-    choices.append({'value': '__None', 'text': ''})
-
-    for table in tables:
-        choices.append({'value': table.id, 'text': table.name})
-
-    return choices
-
-
-def get_dropdown_choices_no_blank(tables):
-    choices = list()
 
     for table in tables:
         choices.append({'value': table.id, 'text': table.name})
@@ -224,8 +214,6 @@ def store_pydensha_form_data_to_db(form, gpio):
             'led_duration': {
                 'blink_on_time': form.blink_on_time.data,
                 'blink_off_time': form.blink_off_time.data,
-                'fade_in_time': form.fade_in_time.data,
-                'fade_out_time': form.fade_out_time.data,
             },
         }
     )
@@ -244,8 +232,8 @@ def store_pydensha_form_data_to_db(form, gpio):
             'train_info': {
                 'led': {
                     'red': form.led_red.data,
-                    'green': form.led_blue.data,
-                    'blue': form.led_green.data
+                    'green': form.led_green.data,
+                    'blue': form.led_blue.data
                 }
             }
         }
@@ -276,11 +264,7 @@ def pydensha():
         blink_on_time=get_dict_val(
                         pydensha, ['led_duration', 'blink_on_time']) or 3.0,
         blink_off_time=get_dict_val(
-                        pydensha, ['led_duration', 'blink_off_time']) or 2.0,
-        fade_in_time=get_dict_val(
-                        pydensha, ['led_duration', 'fade_in_time']) or 3.0,
-        fade_out_time=get_dict_val(
-                        pydensha, ['led_duration', 'fade_out_time']) or 2.0
+                        pydensha, ['led_duration', 'blink_off_time']) or 2.0
     )
 
     category_id = (
@@ -392,7 +376,7 @@ def railway_infos_by_category():
     choices = {
         'regions': get_dropdown_choices(regions),
         'companies': get_dropdown_choices(companies),
-        'lines': get_dropdown_choices_no_blank(lines)
+        'lines': get_dropdown_choices(lines)
     }
 
     return jsonify(choices=choices)
@@ -425,7 +409,7 @@ def railway_infos_by_category_region():
 
     choices = {
         'companies': get_dropdown_choices(companies),
-        'lines': get_dropdown_choices_no_blank(lines)
+        'lines': get_dropdown_choices(lines)
     }
 
     return jsonify(choices=choices)
@@ -451,6 +435,6 @@ def railway_infos_by_category_region_company():
         )
     )
 
-    choices = {'lines': get_dropdown_choices_no_blank(lines)}
+    choices = {'lines': get_dropdown_choices(lines)}
 
     return jsonify(choices=choices)
