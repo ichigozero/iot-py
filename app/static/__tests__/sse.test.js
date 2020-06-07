@@ -235,15 +235,19 @@ describe('Server-Sent Events test suite', () => {
   test('Update (and delete) rail-info table rows with SSE data', () => {
     const mockEvt = {
       'data': JSON.stringify({
-        '1': {
-          'kanji_name': 'Yamanote Line',
-          'last_update': '2020-06-01 09:00',
-          'line_status': 'Delayed',
+        'rail_category': '(Regular)',
+        'rail_info': {
+          '1': {
+            'kanji_name': 'Yamanote Line',
+            'last_update': '2020-06-01 09:00',
+            'line_status': 'Delayed',
+          },
         },
       }),
     };
 
     document.body.innerHTML =
+      '<span id="rail-category"></span>' +
       '<table id="rail-info"><tbody>' +
       '<tr>' +
       '<th></th>' +
@@ -268,6 +272,7 @@ describe('Server-Sent Events test suite', () => {
      '</tbody></table>';
 
     const expected =
+      '<span id="rail-category">(Regular)</span>' +
       '<table id="rail-info"><tbody>' +
       '<tr>' +
       '<th></th>' +
@@ -294,25 +299,29 @@ describe('Server-Sent Events test suite', () => {
   test('Update (and add) rail-info table rows with SSE data', () => {
     const mockEvt = {
       'data': JSON.stringify({
-        '1': {
-          'kanji_name': 'Yamanote Line',
-          'last_update': '2020-06-01 09:00',
-          'line_status': 'Delayed',
-        },
-        '2': {
-          'kanji_name': 'Tokaido Line',
-          'last_update': '2020-06-01 10:00',
-          'line_status': 'Normal operation',
-        },
-        '3': {
-          'kanji_name': 'Keihin Tohoku Line',
-          'last_update': '2020-06-01 10:00',
-          'line_status': 'Normal operation',
+        'rail_category': '(Regular)',
+        'rail_info': {
+          '1': {
+            'kanji_name': 'Yamanote Line',
+            'last_update': '2020-06-01 09:00',
+            'line_status': 'Delayed',
+          },
+          '2': {
+            'kanji_name': 'Tokaido Line',
+            'last_update': '2020-06-01 10:00',
+            'line_status': 'Normal operation',
+          },
+          '3': {
+            'kanji_name': 'Keihin Tohoku Line',
+            'last_update': '2020-06-01 10:00',
+            'line_status': 'Normal operation',
+          },
         },
       }),
     };
 
     document.body.innerHTML =
+      '<span id="rail-category"></span>' +
       '<table id="rail-info"><tbody>' +
       '<tr>' +
       '<th></th>' +
@@ -327,6 +336,7 @@ describe('Server-Sent Events test suite', () => {
      '</tbody></table>';
 
     const expected =
+      '<span id="rail-category">(Regular)</span>' +
       '<table id="rail-info"><tbody>' +
       '<tr>' +
       '<th></th>' +

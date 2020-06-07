@@ -8,7 +8,7 @@ from pydensha import PyDensha
 from pytenki import PyTenki
 
 from app import db
-from app.models import RailwayLine, Setting
+from app.models import RailwayCategory, RailwayLine, Setting
 from app.helper import get_dict_val
 
 
@@ -82,7 +82,7 @@ class PyTenkiTask(BackgroundTask):
                                    ['fcst_area', 'pinpoint_id'])
 
         self.fcast_summary.fetch_weather_data(city_id)
-        self.fcast_details.fetch_parse_html_source(pinpoint_id)
+        self.fcast_details.fetch_html_source(pinpoint_id)
 
         self.pytenki.forecast = self.fcast_summary.get_summary()
         self.pytenki.operate_all_weather_leds(
@@ -162,7 +162,7 @@ class PyDenshaTask(BackgroundTask):
         train_infos = list()
 
         for idx, line in enumerate(self.rail_lines):
-            self.rail_status_details[idx].fetch_parse_html_source(
+            self.rail_status_details[idx].fetch_html_source(
                 line.status_page_url)
             train_infos.append(
                 self.rail_status_details[idx].get_line_status())
@@ -182,13 +182,25 @@ class PyDenshaTask(BackgroundTask):
             sse.publish(self.get_fetched_data(), type='pydensha')
 
     def get_fetched_data(self):
-        fetched_data = dict()
+        category_id = get_dict_val(self.settings, ['rail_info', 'category_id'])
 
+        try:
+            category_name = RailwayCategory.query.get(category_id).name
+        except AttributeError:
+            category_name = ''
+
+        if category_name:
+            category_name = '({})'.format(category_name)
+
+        rail_info = dict()
         for idx, details in enumerate(self.rail_status_details, start=1):
-            fetched_data[str(idx)] = {
+            rail_info[str(idx)] = {
                 'kanji_name':  details.get_line_kanji_name(),
                 'last_update': details.get_last_updated_time(),
                 'line_status': details.get_line_status(),
             }
 
-        return fetched_data
+        return {
+            'rail_category': category_name,
+            'rail_info': rail_info
+        }

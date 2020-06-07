@@ -32,8 +32,10 @@ function sse(streamURL) {
       return null;
     }
 
+    updateContent('rail-category', data.rail_category);
+
     const table = document.getElementById('rail-info');
-    const dataKeys = Object.keys(data);
+    const dataKeys = Object.keys(data.rail_info);
     const lengthDiff = table.rows.length - dataKeys.length - 1;
 
     if (lengthDiff > 0) {
@@ -56,9 +58,10 @@ function sse(streamURL) {
 
     let i = 1;
     dataKeys.forEach(function(key) {
-      updateContent('rail-line-' + i, data[key]['kanji_name']);
-      updateContent('rail-status-' + i, data[key]['line_status']);
-      updateContent('rail-status-timestamp-' + i, data[key]['last_update']);
+      updateContent('rail-line-' + i, data['rail_info'][key]['kanji_name']);
+      updateContent('rail-status-' + i, data['rail_info'][key]['line_status']);
+      updateContent(
+          'rail-status-timestamp-' + i, data['rail_info'][key]['last_update']);
       i++;
     });
   }, false);

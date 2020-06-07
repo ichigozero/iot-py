@@ -84,7 +84,7 @@
       <div class="card border-primary">
         <div
           class="card-header text-white text-center bg-primary"
-        >路線情報</div>
+        >路線情報<span id="rail-category">{{ rail_category }}</span></div>
         <div class="card-body">
           <div class="row table-responsive">
             <table id="rail-info" class="table table-bordered">
@@ -94,7 +94,7 @@
                   <th class="text-center">運行情報</th>
                   <th class="text-center">最終更新日時</th>
                 </tr>
-                {% for key, value in pydensha_data.items() %}
+                {% for key, value in rail_info.items() %}
                 <tr>
                   <td id="rail-line-{{ loop.index }}">
                     {{ value['kanji_name'] }}
