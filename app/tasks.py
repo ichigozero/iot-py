@@ -8,7 +8,7 @@ from pydensha import PyDensha
 from pytenki import PyTenki
 
 from app import db
-from app.models import RailwayLine, Setting
+from app.models import RailwayCategory, RailwayLine, Setting
 from app.helper import get_dict_val
 
 
@@ -182,13 +182,25 @@ class PyDenshaTask(BackgroundTask):
             sse.publish(self.get_fetched_data(), type='pydensha')
 
     def get_fetched_data(self):
-        fetched_data = dict()
+        category_id = get_dict_val(self.settings, ['rail_info', 'category_id'])
 
+        try:
+            category_name = RailwayCategory.query.get(category_id).name
+        except AttributeError:
+            category_name = ''
+
+        if category_name:
+            category_name = '({})'.format(category_name)
+
+        rail_info = dict()
         for idx, details in enumerate(self.rail_status_details, start=1):
-            fetched_data[str(idx)] = {
+            rail_info[str(idx)] = {
                 'kanji_name':  details.get_line_kanji_name(),
                 'last_update': details.get_last_updated_time(),
                 'line_status': details.get_line_status(),
             }
 
-        return fetched_data
+        return {
+            'rail_category': category_name,
+            'rail_info': rail_info
+        }

@@ -91,10 +91,13 @@ def test_get_fetched_pydensha_data(mocker, pydensha_task):
     pydensha_task.start()
 
     expected = {
-        '1': {
-            'kanji_name': 'Yamanote Line',
-            'last_update': '2020-06-01 09:00',
-            'line_status': 'Delayed',
+        'rail_category': 'railway_category',
+        'rail_info': {
+            '1': {
+                'kanji_name': 'Yamanote Line',
+                'last_update': '2020-06-01 09:00',
+                'line_status': 'Delayed',
+            },
         },
     }
     spy_sse.assert_called_once_with(pydensha_task.get_fetched_data(),

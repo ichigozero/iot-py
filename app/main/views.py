@@ -28,5 +28,6 @@ def index():
         tomorrow_fcast=pytenki_data['fcast']['tomorrow'],
         fcast_loc=pytenki_data['fcast_loc'],
         fcast_24_hours=pytenki_data['fcast_24_hours'],
-        pydensha_data=pydensha_data
+        rail_category=pydensha_data['rail_category'],
+        rail_info=pydensha_data['rail_info']
     )
