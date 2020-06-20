@@ -82,7 +82,7 @@ class PyTenkiTask(BackgroundTask):
                                    ['fcst_area', 'pinpoint_id'])
 
         self.fcast_summary.fetch_weather_data(city_id)
-        self.fcast_details.fetch_html_source(pinpoint_id)
+        self.fcast_details.fetch_parse_html_source(pinpoint_id)
 
         self.pytenki.forecast = self.fcast_summary.get_summary()
         self.pytenki.operate_all_weather_leds(
@@ -162,7 +162,7 @@ class PyDenshaTask(BackgroundTask):
         train_infos = list()
 
         for idx, line in enumerate(self.rail_lines):
-            self.rail_status_details[idx].fetch_html_source(
+            self.rail_status_details[idx].fetch_parse_html_source(
                 line.status_page_url)
             train_infos.append(
                 self.rail_status_details[idx].get_line_status())
