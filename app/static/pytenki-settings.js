@@ -2,7 +2,7 @@ import {updateDropdown} from './helper.js';
 
 
 function updateForecastAreaDropdowns(
-    areasByRegionURL, areasByPrefecture, areasByCity) {
+    csrfToken, areasByRegionURL, areasByPrefecture, areasByCity) {
   document.addEventListener('input', function(event) {
     if (event.target.id == 'region') {
       const xhr = new XMLHttpRequest();
@@ -19,7 +19,8 @@ function updateForecastAreaDropdowns(
       };
       xhr.open('POST', areasByRegionURL, true);
       xhr.setRequestHeader(
-          'Content-Type', 'application/x-www-form-urlencoded; charset-UTF-8');
+          'Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+      xhr.setRequestHeader('X-CSRFToken', csrfToken);
       xhr.send('region=' + event.target.value);
     } else if (event.target.id == 'prefecture') {
       const xhr = new XMLHttpRequest();
@@ -36,6 +37,7 @@ function updateForecastAreaDropdowns(
       xhr.open('POST', areasByPrefecture, true);
       xhr.setRequestHeader(
           'Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+      xhr.setRequestHeader('X-CSRFToken', csrfToken);
       xhr.send('prefecture=' + event.target.value);
     } else if (event.target.id == 'city') {
       const xhr = new XMLHttpRequest();
@@ -51,6 +53,7 @@ function updateForecastAreaDropdowns(
       xhr.open('POST', areasByCity, true);
       xhr.setRequestHeader(
           'Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+      xhr.setRequestHeader('X-CSRFToken', csrfToken);
       xhr.send('city=' + event.target.value);
     }
   });

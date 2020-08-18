@@ -2,7 +2,7 @@ import {updateDropdown} from './helper.js';
 
 
 function updateRailwayInfoDropdowns(
-    infosByCategoryURL, infosByRegionURL, infosByCompanyURL) {
+    csrfToken, infosByCategoryURL, infosByRegionURL, infosByCompanyURL) {
   document.addEventListener('input', function(event) {
     if (event.target.id == 'category') {
       const xhr = new XMLHttpRequest();
@@ -19,7 +19,8 @@ function updateRailwayInfoDropdowns(
       };
       xhr.open('POST', infosByCategoryURL, true);
       xhr.setRequestHeader(
-          'Content-Type', 'application/x-www-form-urlencoded; charset-UTF-8');
+          'Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+      xhr.setRequestHeader('X-CSRFToken', csrfToken);
       xhr.send('category=' + event.target.value);
     } else if (event.target.id == 'region') {
       const categoryId = document.getElementById('category').value;
@@ -37,6 +38,7 @@ function updateRailwayInfoDropdowns(
       xhr.open('POST', infosByRegionURL, true);
       xhr.setRequestHeader(
           'Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+      xhr.setRequestHeader('X-CSRFToken', csrfToken);
       xhr.send('category=' + categoryId +
                '&region=' + event.target.value);
     } else if (event.target.id == 'company') {
@@ -55,6 +57,7 @@ function updateRailwayInfoDropdowns(
       xhr.open('POST', infosByCompanyURL, true);
       xhr.setRequestHeader(
           'Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+      xhr.setRequestHeader('X-CSRFToken', csrfToken);
       xhr.send('category=' + categoryId +
                '&region=' + regionId +
                '&company=' + event.target.value);

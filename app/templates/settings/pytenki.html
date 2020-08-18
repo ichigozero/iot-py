@@ -215,6 +215,7 @@
   import {updateForecastAreaDropdowns}
   from '{{ url_for('static', filename='pytenki-settings.js') }}';
   updateForecastAreaDropdowns(
+    '{{ csrf_token() }}',
     '{{ url_for('settings.areas_by_region') }}',
     '{{ url_for('settings.areas_by_prefecture') }}',
     '{{ url_for('settings.areas_by_city') }}',

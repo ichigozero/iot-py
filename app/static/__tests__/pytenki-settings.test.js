@@ -57,12 +57,17 @@ describe('pytenki settings test suite', () => {
     const spy = jest.spyOn(helper, 'updateDropdown');
 
     spy.mockImplementation(() => {});
-    settings.updateForecastAreaDropdowns(targetURL, '', '');
+    settings.updateForecastAreaDropdowns('csrfToken', targetURL, '', '');
     simulateInput(region);
     mockXHR.onload();
 
     expect(mockXHR.open).toHaveBeenCalledWith(
         'POST', targetURL, true);
+    expect(mockXHR.setRequestHeader).toHaveBeenCalledWith(
+        'Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+    expect(mockXHR.setRequestHeader).toHaveBeenCalledWith(
+        'X-CSRFToken', 'csrfToken');
+    expect(mockXHR.send).toHaveBeenCalledWith('region=');
     expect(helper.updateDropdown).toHaveBeenCalledWith(
         'prefecture', choices['prefectures']);
     expect(helper.updateDropdown).toHaveBeenCalledWith(
@@ -80,12 +85,17 @@ describe('pytenki settings test suite', () => {
     const spy = jest.spyOn(helper, 'updateDropdown');
 
     spy.mockImplementation(() => {});
-    settings.updateForecastAreaDropdowns('', targetURL, '');
+    settings.updateForecastAreaDropdowns('csrfToken', '', targetURL, '');
     simulateInput(prefecture);
     mockXHR.onload();
 
     expect(mockXHR.open).toHaveBeenCalledWith(
         'POST', targetURL, true);
+    expect(mockXHR.setRequestHeader).toHaveBeenCalledWith(
+        'Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+    expect(mockXHR.setRequestHeader).toHaveBeenCalledWith(
+        'X-CSRFToken', 'csrfToken');
+    expect(mockXHR.send).toHaveBeenCalledWith('prefecture=');
     expect(helper.updateDropdown).toHaveBeenCalledWith(
         'city', choices['cities']);
     expect(helper.updateDropdown).toHaveBeenCalledWith(
@@ -101,12 +111,17 @@ describe('pytenki settings test suite', () => {
     const spy = jest.spyOn(helper, 'updateDropdown');
 
     spy.mockImplementation(() => {});
-    settings.updateForecastAreaDropdowns('', '', targetURL);
+    settings.updateForecastAreaDropdowns('csrfToken', '', '', targetURL);
     simulateInput(city);
     mockXHR.onload();
 
     expect(mockXHR.open).toHaveBeenCalledWith(
         'POST', targetURL, true);
+    expect(mockXHR.setRequestHeader).toHaveBeenCalledWith(
+        'Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+    expect(mockXHR.setRequestHeader).toHaveBeenCalledWith(
+        'X-CSRFToken', 'csrfToken');
+    expect(mockXHR.send).toHaveBeenCalledWith('city=');
     expect(helper.updateDropdown).toHaveBeenCalledWith(
         'pinpoint_loc', choices['pinpoints']);
     spy.mockRestore();
