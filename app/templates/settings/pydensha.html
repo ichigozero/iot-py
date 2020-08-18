@@ -158,6 +158,7 @@
   import {updateRailwayInfoDropdowns}
   from '{{ url_for('static', filename='pydensha-settings.js') }}';
   updateRailwayInfoDropdowns(
+    '{{ csrf_token() }}',
     '{{ url_for('settings.railway_infos_by_category') }}',
     '{{ url_for('settings.railway_infos_by_category_region') }}',
     '{{ url_for('settings.railway_infos_by_category_region_company') }}',

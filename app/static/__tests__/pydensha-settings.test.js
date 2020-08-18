@@ -57,13 +57,17 @@ describe('pydensha settings test suite', () => {
     const spy = jest.spyOn(helper, 'updateDropdown');
 
     spy.mockImplementation(() => {});
-    settings.updateRailwayInfoDropdowns(targetURL, '', '');
+
+    settings.updateRailwayInfoDropdowns('csrfToken', targetURL, '', '');
     simulateInput(category);
     mockXHR.onload();
 
     expect(mockXHR.open).toHaveBeenCalledWith(
         'POST', targetURL, true);
-    expect(mockXHR.send).toHaveBeenCalledWith('category=');
+    expect(mockXHR.setRequestHeader).toHaveBeenCalledWith(
+        'Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+    expect(mockXHR.setRequestHeader).toHaveBeenCalledWith(
+        'X-CSRFToken', 'csrfToken');
     expect(helper.updateDropdown).toHaveBeenCalledWith(
         'region', choices['regions']);
     expect(helper.updateDropdown).toHaveBeenCalledWith(
@@ -81,12 +85,16 @@ describe('pydensha settings test suite', () => {
     const spy = jest.spyOn(helper, 'updateDropdown');
 
     spy.mockImplementation(() => {});
-    settings.updateRailwayInfoDropdowns('', targetURL, '');
+    settings.updateRailwayInfoDropdowns('csrfToken', '', targetURL, '');
     simulateInput(region);
     mockXHR.onload();
 
     expect(mockXHR.open).toHaveBeenCalledWith(
         'POST', targetURL, true);
+    expect(mockXHR.setRequestHeader).toHaveBeenCalledWith(
+        'Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+    expect(mockXHR.setRequestHeader).toHaveBeenCalledWith(
+        'X-CSRFToken', 'csrfToken');
     expect(mockXHR.send).toHaveBeenCalledWith('category=&region=');
     expect(helper.updateDropdown).toHaveBeenCalledWith(
         'company', choices['companies']);
@@ -103,12 +111,16 @@ describe('pydensha settings test suite', () => {
     const spy = jest.spyOn(helper, 'updateDropdown');
 
     spy.mockImplementation(() => {});
-    settings.updateRailwayInfoDropdowns('', '', targetURL);
+    settings.updateRailwayInfoDropdowns('csrfToken', '', '', targetURL);
     simulateInput(company);
     mockXHR.onload();
 
     expect(mockXHR.open).toHaveBeenCalledWith(
         'POST', targetURL, true);
+    expect(mockXHR.setRequestHeader).toHaveBeenCalledWith(
+        'Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+    expect(mockXHR.setRequestHeader).toHaveBeenCalledWith(
+        'X-CSRFToken', 'csrfToken');
     expect(mockXHR.send).toHaveBeenCalledWith('category=&region=&company=');
     expect(helper.updateDropdown).toHaveBeenCalledWith(
         'line', choices['lines']);
