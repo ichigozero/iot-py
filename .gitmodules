@@ -1,0 +1,12 @@
+[submodule "submodules/pydensha"]
+	path = submodules/pydensha
+	url = git@github.com:ichigozero/pydensha.git
+[submodule "submodules/traininfojp"]
+	path = submodules/traininfojp
+	url = git@github.com:ichigozero/traininfojp.git
+[submodule "submodules/pytenki"]
+	path = submodules/pytenki
+	url = git@github.com:ichigozero/pytenki.git
+[submodule "submodules/tenkihaxjp"]
+	path = submodules/tenkihaxjp
+	url = git@github.com:ichigozero/tenkihaxjp.git

@@ -1,0 +1,5 @@
+recursive-include app/auth *
+recursive-include app/main *
+recursive-include app/settings *
+recursive-include app/static *
+recursive-include app/templates *
