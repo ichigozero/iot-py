@@ -7,7 +7,6 @@ from gpiozero import Device
 from app import create_app, db
 from app.models import (
     City,
-    PinpointLocation,
     Prefecture,
     RailwayCategory,
     RailwayCompany,
@@ -16,6 +15,7 @@ from app.models import (
     RailwayRegion,
     Region,
     Setting,
+    Subprefecture,
     User
 )
 from app.tasks import PyDenshaTask, PyTenkiTask
@@ -31,44 +31,41 @@ class TestConfig(Config):
 
 @pytest.fixture
 def app(mocker):
-    class MockForecastSummary:
-        def fetch_weather_data(self, city_id):
-            pass
-
-        def get_city(self):
-            return 'Tokyo'
-
-        def get_summary(self, period=''):
-            summary = {
-                'day': 'Today',
-                'city': self.get_city(),
-                'weather': 'Fine',
-                'temp': {'max': 1, 'min': 0}
+    class MockWeatherScraper:
+        def extract_forecast_summary(self, location_ids):
+            return {
+                'city': 'Minato-ku',
+                'update_datetime': '8/20',
+                'forecasts': {
+                    'today': {
+                        'date': 'Today',
+                        'weather': 'Fine',
+                        'temps': {
+                            'high': '12℃. [+1]',
+                            'low': '11℃. [+1]',
+                        }
+                    },
+                    'tomorrow': {
+                        'date': 'Tomorrow',
+                        'weather': 'Fine',
+                        'temps': {
+                            'high': '10℃. [+1]',
+                            'low': '9℃. [+1]',
+                        }
+                    },
+                }
             }
 
-            if period:
-                summary['day'] = 'Tomorrow'
-
-            return summary
-
-    class MockForecastDetails:
-        def fetch_parse_html_source(self, pinpoint_id):
-            pass
-
-        def get_pinpoint_loc_name(self):
-            return 'Minato-ku'
-
-        def get_3_hourly_forecasts_for_next_24_hours(self):
+        def extract_3_hourly_forecasts_for_next_24_hours(self, location_ids):
             return [
-                {'time': '9',  'temp': '', 'weather': ''},
-                {'time': '12', 'temp': '', 'weather': ''},
-                {'time': '15', 'temp': '', 'weather': ''},
-                {'time': '18', 'temp': '', 'weather': ''},
-                {'time': '21', 'temp': '', 'weather': ''},
-                {'time': '0',  'temp': '', 'weather': ''},
-                {'time': '3',  'temp': '', 'weather': ''},
-                {'time': '6',  'temp': '', 'weather': ''},
-                {'time': '9',  'temp': '', 'weather': ''}
+                {'hour': '09',  'weather': '', 'temp': ''},
+                {'hour': '12', 'weather': '', 'temp': ''},
+                {'hour': '15', 'weather': '', 'temp': ''},
+                {'hour': '18', 'weather': '', 'temp': ''},
+                {'hour': '21', 'weather': '', 'temp': ''},
+                {'hour': '24',  'weather': '', 'temp': ''},
+                {'hour': '03',  'weather': '', 'temp': ''},
+                {'hour': '06',  'weather': '', 'temp': ''},
             ]
 
     class MockRailDetails:
@@ -84,10 +81,8 @@ def app(mocker):
         def get_line_status(self):
             return 'Delayed'
 
-    mocker.patch('tenkihaxjp.ForecastSummary',
-                 return_value=MockForecastSummary())
-    mocker.patch('tenkihaxjp.ForecastDetails',
-                 return_value=MockForecastDetails())
+    mocker.patch('tenki_no_ko.WeatherScraper',
+                 return_value=MockWeatherScraper())
     mocker.patch('traininfojp.RailDetails',
                  return_value=MockRailDetails())
 
@@ -147,13 +142,21 @@ def app_db():
     user = User(username='foo')
     user.set_password('bar')
 
-    region = Region(name='region')
-    pref_1 = Prefecture(name='prefecture_1', region=region)
-    pref_2 = Prefecture(name='prefecture_2', region=region)
-    city_1 = City(id=1, name='city_1', prefecture=pref_1)
-    city_2 = City(id=2, name='city_2', prefecture=pref_1)
-    pinpoint_loc_1 = PinpointLocation(id=1, name='pinpoint_1', city=city_1)
-    pinpoint_loc_2 = PinpointLocation(id=2, name='pinpoint_2', city=city_2)
+    region = Region(name='region', code='1')
+    prefecture_1 = Prefecture(name='prefecture_1', code='1', region=region)
+    prefecture_2 = Prefecture(name='prefecture_2', code='2', region=region)
+    subprefecture_1 = Subprefecture(
+        name='subprefecture_1',
+        code='1',
+        prefecture=prefecture_1
+    )
+    subprefecture_2 = Subprefecture(
+        name='subprefecture_2',
+        code='2',
+        prefecture=prefecture_1
+    )
+    city_1 = City(name='city_1', code='1', subprefecture=subprefecture_1)
+    city_2 = City(name='city_2', code='2', subprefecture=subprefecture_2)
 
     railway_category = RailwayCategory(name='rail_category')
     railway_region_1 = RailwayRegion(name='rail_region_1')
@@ -180,8 +183,8 @@ def app_db():
             'fcst_area': {
                 'region_id': 1,
                 'pref_id': 1,
+                'subpref_id': 1,
                 'city_id': 1,
-                'pinpoint_id': 1
             },
             'fetch_intvl': 35,
             'led_duration': {
@@ -232,12 +235,12 @@ def app_db():
     db.session.add_all([
         user,
         region,
-        pref_1,
-        pref_2,
+        prefecture_1,
+        prefecture_2,
+        subprefecture_1,
+        subprefecture_2,
         city_1,
         city_2,
-        pinpoint_loc_1,
-        pinpoint_loc_2,
         railway_category,
         railway_region_1,
         railway_region_2,

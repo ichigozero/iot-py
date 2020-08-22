@@ -2,7 +2,7 @@ import {updateDropdown} from './helper.js';
 
 
 function updateForecastAreaDropdowns(
-    csrfToken, areasByRegionURL, areasByPrefecture, areasByCity) {
+    csrfToken, areasByRegionURL, areasByPrefecture, areasBySubprefecture) {
   document.addEventListener('input', function(event) {
     if (event.target.id == 'region') {
       const xhr = new XMLHttpRequest();
@@ -13,8 +13,8 @@ function updateForecastAreaDropdowns(
           const choices = data.choices;
 
           updateDropdown('prefecture', choices['prefectures']);
+          updateDropdown('subprefecture', choices['subprefectures']);
           updateDropdown('city', choices['cities']);
-          updateDropdown('pinpoint_loc', choices['pinpoints']);
         }
       };
       xhr.open('POST', areasByRegionURL, true);
@@ -30,8 +30,8 @@ function updateForecastAreaDropdowns(
           const data = JSON.parse(this.response);
           const choices = data.choices;
 
+          updateDropdown('subprefecture', choices['subprefectures']);
           updateDropdown('city', choices['cities']);
-          updateDropdown('pinpoint_loc', choices['pinpoints']);
         }
       };
       xhr.open('POST', areasByPrefecture, true);
@@ -39,7 +39,7 @@ function updateForecastAreaDropdowns(
           'Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
       xhr.setRequestHeader('X-CSRFToken', csrfToken);
       xhr.send('prefecture=' + event.target.value);
-    } else if (event.target.id == 'city') {
+    } else if (event.target.id == 'subprefecture') {
       const xhr = new XMLHttpRequest();
 
       xhr.onload = function() {
@@ -47,14 +47,14 @@ function updateForecastAreaDropdowns(
           const data = JSON.parse(this.response);
           const choices = data.choices;
 
-          updateDropdown('pinpoint_loc', choices['pinpoints']);
+          updateDropdown('city', choices['cities']);
         }
       };
-      xhr.open('POST', areasByCity, true);
+      xhr.open('POST', areasBySubprefecture, true);
       xhr.setRequestHeader(
           'Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
       xhr.setRequestHeader('X-CSRFToken', csrfToken);
-      xhr.send('city=' + event.target.value);
+      xhr.send('subprefecture=' + event.target.value);
     }
   });
 }

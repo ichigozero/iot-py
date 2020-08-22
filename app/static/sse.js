@@ -11,15 +11,15 @@ function sse(streamURL) {
     updateContent('forecast-loc', data.fcast_loc);
 
     updateContent('today-weather', data.fcast.today.weather);
-    updateContent('today-max-temp', data.fcast.today.temp.max);
-    updateContent('today-min-temp', data.fcast.today.temp.min);
+    updateContent('today-max-temp', data.fcast.today.temps.high);
+    updateContent('today-min-temp', data.fcast.today.temps.low);
 
     updateContent('tomorrow-weather', data.fcast.tomorrow.weather);
-    updateContent('tomorrow-max-temp', data.fcast.tomorrow.temp.max);
-    updateContent('tomorrow-min-temp', data.fcast.tomorrow.temp.min);
+    updateContent('tomorrow-max-temp', data.fcast.tomorrow.temps.high);
+    updateContent('tomorrow-min-temp', data.fcast.tomorrow.temps.low);
 
     for (let i = 0; i < data.fcast_24_hours.length; i++) {
-      updateContent('hour-' + (i + 1), data.fcast_24_hours[i]['time']);
+      updateContent('hour-' + (i + 1), data.fcast_24_hours[i]['hour']);
       updateContent('weather-' + (i + 1), data.fcast_24_hours[i]['weather']);
       updateContent('temp-' + (i + 1), data.fcast_24_hours[i]['temp']);
     }

@@ -43,8 +43,8 @@ def query_select_multiple_field(field_name):
 class PyTenkiForm(FlaskForm):
     region = query_select_field(u'Region')
     prefecture = query_select_field(u'Prefecture')
+    subprefecture = query_select_field(u'Subprefecture')
     city = query_select_field(u'City')
-    pinpoint_loc = query_select_field(u'Pinpoint Location')
     fetch_intvl = IntegerRangeField(u'Data Fetch Interval')
     blink_on_time = DecimalRangeField(u'On Time', places=1)
     blink_off_time = DecimalRangeField(u'Off Time', places=1)

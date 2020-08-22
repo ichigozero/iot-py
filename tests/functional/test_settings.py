@@ -13,9 +13,9 @@ def test_fetch_pytenki_settings_page(client, login_client):
     elements = (
         b'<option selected value="1">region</option>',
         b'<option selected value="1">prefecture_1</option>',
+        b'<option selected value="1">subprefecture_1</option>',
+        b'<option value="2">subprefecture_2</option>',
         b'<option selected value="1">city_1</option>',
-        b'<option value="2">city_2</option>',
-        b'<option selected value="1">pinpoint_1</option>',
         b'name="fetch_intvl" step="5" type="range" value="35"',
         b'name="blink_on_time" step="0.5" type="range" value="1.0"',
         b'name="blink_off_time" step="0.5" type="range" value="1.0"',
@@ -33,7 +33,7 @@ def test_update_pytenki_settings_with_null_values(client, login_client):
     response = client.post(
         url_for('settings.pytenki'),
         data=dict(region='', prefecture='',
-                  city='', pinpoint_loc='',
+                  subprefecture='', city='',
                   led_fine='', led_cloud='',
                   led_rain='', led_snow='',
                   tts_button=''),
@@ -44,8 +44,8 @@ def test_update_pytenki_settings_with_null_values(client, login_client):
     elements = (
         b'"form-control is-invalid" id="region"',
         b'"form-control is-invalid" id="prefecture"',
+        b'"form-control is-invalid" id="subprefecture"',
         b'"form-control is-invalid" id="city"',
-        b'"form-control is-invalid" id="pinpoint_loc"',
         b'"form-control is-invalid" id="led_fine"',
         b'"form-control is-invalid" id="led_cloud"',
         b'"form-control is-invalid" id="led_rain"',
@@ -60,7 +60,7 @@ def test_update_pytenki_settings_with_duplicate_values(client, login_client):
     response = client.post(
         url_for('settings.pytenki'),
         data=dict(region='1', prefecture='1',
-                  city='2', pinpoint_loc='2',
+                  subprefecture='2', city='2',
                   led_fine='4', led_cloud='4',
                   led_rain='4', led_snow='4',
                   tts_button='4'),
@@ -85,7 +85,7 @@ def test_successful_pytenki_settings_update(mocker, client, login_client):
     response = client.post(
         url_for('settings.pytenki'),
         data=dict(region='1', prefecture='1',
-                  city='2', pinpoint_loc='2',
+                  subprefecture='2', city='2',
                   led_fine='4', led_cloud='17',
                   led_rain='27', led_snow='22',
                   tts_button='2', fetch_intvl='20',
@@ -102,9 +102,9 @@ def test_successful_pytenki_settings_update(mocker, client, login_client):
         b'PyTenki Settings Have Been Updated Successfully',
         b'<option selected value="1">region</option>',
         b'<option selected value="1">prefecture_1</option>',
-        b'<option value="1">city_1</option>',
+        b'<option value="1">subprefecture_1</option>',
+        b'<option selected value="2">subprefecture_2</option>',
         b'<option selected value="2">city_2</option>',
-        b'<option selected value="2">pinpoint_2</option>',
         b'name="fetch_intvl" step="5" type="range" value="20"',
         b'name="blink_on_time" step="0.5" type="range" value="3.0"',
         b'name="blink_off_time" step="0.5" type="range" value="2.0"',
@@ -133,13 +133,13 @@ def test_fetch_areas_by_region(client, login_client):
             {'value': 1, 'text': 'prefecture_1'},
             {'value': 2, 'text': 'prefecture_2'}
         ],
-        'cities': [
-            {'value': 1, 'text': 'city_1'},
-            {'value': 2, 'text': 'city_2'}
+        'subprefectures': [
+            {'value': 1, 'text': 'subprefecture_1'},
+            {'value': 2, 'text': 'subprefecture_2'}
         ],
-        'pinpoints': [
-            {'value': 1, 'text': 'pinpoint_1'}
-        ]
+        'cities': [
+            {'value': 1, 'text': 'city_1'}
+        ],
     }
 
     assert response.json['choices'] == expected
@@ -154,29 +154,29 @@ def test_fetch_areas_by_prefecture(client, login_client):
     assert response.status_code == 200
 
     expected = {
-        'cities': [
-            {'value': 1, 'text': 'city_1'},
-            {'value': 2, 'text': 'city_2'}
+        'subprefectures': [
+            {'value': 1, 'text': 'subprefecture_1'},
+            {'value': 2, 'text': 'subprefecture_2'}
         ],
-        'pinpoints': [
-            {'value': 1, 'text': 'pinpoint_1'}
+        'cities': [
+            {'value': 1, 'text': 'city_1'}
         ]
     }
 
     assert response.json['choices'] == expected
 
 
-def test_fetch_areas_by_city(client, login_client):
+def test_fetch_areas_by_subprefecture(client, login_client):
     response = client.post(
-        url_for('settings.areas_by_city'),
-        data=dict(city='1')
+        url_for('settings.areas_by_subprefecture'),
+        data=dict(subprefecture='1')
     )
 
     assert response.status_code == 200
 
     expected = {
-        'pinpoints': [
-            {'value': 1, 'text': 'pinpoint_1'}
+        'cities': [
+            {'value': 1, 'text': 'city_1'}
         ]
     }
 

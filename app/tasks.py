@@ -1,14 +1,23 @@
 import functools
+import re
 import threading
 
-import tenkihaxjp
+import tenki_no_ko
 import traininfojp
 from flask_sse import sse
 from pydensha import PyDensha
 from pytenki import PyTenki
 
 from app import db
-from app.models import RailwayCategory, RailwayLine, Setting
+from app.models import (
+    City,
+    Prefecture,
+    RailwayCategory,
+    RailwayLine,
+    Region,
+    Subprefecture,
+    Setting,
+)
 from app.helper import get_dict_val
 
 
@@ -54,14 +63,36 @@ class BackgroundTask:
 class PyTenkiTask(BackgroundTask):
     def __init__(self):
         super().__init__()
-        self.fcast_summary = tenkihaxjp.ForecastSummary()
-        self.fcast_details = tenkihaxjp.ForecastDetails()
+        self.weather_scraper = tenki_no_ko.WeatherScraper()
         self.pytenki = PyTenki()
         self.settings = None
+        self.location_codes = None
 
     def init_task(self):
         self.settings = Setting.load_setting('pytenki')
-        gpio = Setting.load_setting('gpio')
+        city_id = get_dict_val(self.settings, ['fcst_area', 'city_id'])
+
+        try:
+            location = (
+                db
+                .session
+                .query(Region, Prefecture, Subprefecture, City)
+                .filter(
+                    Region.id == Prefecture.region_id,
+                    Prefecture.id == Subprefecture.prefecture_id,
+                    Subprefecture.id == City.subprefecture_id,
+                    City.id == city_id
+                )
+                .first()
+            )
+            self.location_codes = {
+                'region_id': location.Region.code,
+                'prefecture_id': location.Prefecture.code,
+                'subprefecture_id': location.Subprefecture.code,
+                'city_id': location.City.code,
+            }
+        except AttributeError:
+            self.location_codes = None
 
         fetch_intvl = get_dict_val(self.settings, ['fetch_intvl']) or 35
         self.wait_time = fetch_intvl * SECONDS_IN_MIN
@@ -69,6 +100,7 @@ class PyTenkiTask(BackgroundTask):
         self.pytenki._close_leds()
         self.pytenki._close_button()
 
+        gpio = Setting.load_setting('gpio')
         led_pins = get_dict_val(gpio, ['weather', 'led'])
         self.pytenki.assign_leds(led_pins)
 
@@ -77,14 +109,42 @@ class PyTenkiTask(BackgroundTask):
 
     @wait_event
     def _fetch_data(self):
-        city_id = get_dict_val(self.settings, ['fcst_area', 'city_id'])
-        pinpoint_id = get_dict_val(self.settings,
-                                   ['fcst_area', 'pinpoint_id'])
+        fetched_data = self.get_fetched_data()
+        today_forecast = fetched_data.get('fcast').get('today')
 
-        self.fcast_summary.fetch_weather_data(city_id)
-        self.fcast_details.fetch_parse_html_source(pinpoint_id)
+        try:
+            max_temp = (
+                re
+                .search(
+                    r'([0-9]+)℃.*',
+                    today_forecast.get('temps').get('high')
+                )
+                .group(1)
+            )
+            max_temp = '{}度'.format(max_temp)
 
-        self.pytenki.forecast = self.fcast_summary.get_summary()
+            min_temp = (
+                re
+                .search(
+                    r'([0-9]+)℃.*',
+                    today_forecast.get('temps').get('low')
+                )
+                .group(1)
+            )
+            min_temp = '{}度'.format(min_temp)
+        except AttributeError:
+            max_temp = ''
+            min_temp = ''
+
+        self.pytenki.forecast = {
+            'day': '今日',
+            'city': fetched_data.get('fcast_loc'),
+            'weather': today_forecast.get('weather'),
+            'temp': {
+                'max': max_temp,
+                'min': min_temp
+            },
+        }
         self.pytenki.operate_all_weather_leds(
             on_time=get_dict_val(
                 self.settings, ['led_duration', 'blink_on_time']),
@@ -101,26 +161,34 @@ class PyTenkiTask(BackgroundTask):
 
         app = create_app()
         with app.app_context():
-            sse.publish(self.get_fetched_data(), type='pytenki')
+            sse.publish(fetched_data, type='pytenki')
 
     def get_fetched_data(self):
-        fcast_loc = '/'.join(
-            filter(bool, (self.fcast_summary.get_city(),
-                          self.fcast_details.get_pinpoint_loc_name()))
+        forecast_summary = (
+            self.weather_scraper
+            .extract_forecast_summary(self.location_codes)
         )
-
-        if fcast_loc:
-            fcast_loc = '({})'.format(fcast_loc)
 
         return {
             'fcast': {
-                'today': self.fcast_summary.get_summary(),
-                'tomorrow': self.fcast_summary
-                                .get_summary(tenkihaxjp.Period.TOMORROW),
+                'today': (
+                    forecast_summary
+                    .get('forecasts')
+                    .get('today')
+                ),
+                'tomorrow': (
+                    forecast_summary
+                    .get('forecasts')
+                    .get('tomorrow')
+                ),
             },
-            'fcast_24_hours': self.fcast_details
-                                  .get_3_hourly_forecasts_for_next_24_hours(),
-            'fcast_loc': fcast_loc
+            'fcast_24_hours': (
+                self
+                .weather_scraper
+                .extract_3_hourly_forecasts_for_next_24_hours(
+                    self.location_codes)
+            ),
+            'fcast_loc': forecast_summary.get('city')
         }
 
 
@@ -188,9 +256,6 @@ class PyDenshaTask(BackgroundTask):
             category_name = RailwayCategory.query.get(category_id).name
         except AttributeError:
             category_name = ''
-
-        if category_name:
-            category_name = '({})'.format(category_name)
 
         rail_info = dict()
         for idx, details in enumerate(self.rail_status_details, start=1):
