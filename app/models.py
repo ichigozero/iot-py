@@ -49,9 +49,13 @@ class Setting(db.Model):
 
 class Region(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(32), index=True)
-    prefectures = db.relationship('Prefecture', backref='region',
-                                  lazy='dynamic')
+    code = db.Column(db.Integer)
+    name = db.Column(db.String(32))
+    prefectures = db.relationship(
+        'Prefecture',
+        backref='region',
+        lazy='dynamic'
+    )
 
     def __repr__(self):
         return '<Region {}>'.format(self.name)
@@ -59,20 +63,42 @@ class Region(db.Model):
 
 class Prefecture(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(32), index=True)
+    code = db.Column(db.Integer)
+    name = db.Column(db.String(32))
     region_id = db.Column(db.Integer, db.ForeignKey('region.id'))
-    cities = db.relationship('City', backref='prefecture', lazy='dynamic')
+    subprefectures = db.relationship(
+        'Subprefecture',
+        backref='prefecture',
+        lazy='dynamic'
+    )
 
     def __repr__(self):
         return '<Prefecture {}>'.format(self.name)
 
 
+class Subprefecture(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    code = db.Column(db.Integer)
+    name = db.Column(db.String(64))
+    prefecture_id = db.Column(db.Integer, db.ForeignKey('prefecture.id'))
+    cities = db.relationship(
+        'City',
+        backref='subprefecture',
+        lazy='dynamic'
+    )
+
+    def __repr__(self):
+        return '<Subprefecture {}>'.format(self.name)
+
+
 class City(db.Model):
-    id = db.Column(db.Integer, primary_key=True, autoincrement=False)
-    name = db.Column(db.String(64), index=True)
-    pref_id = db.Column(db.Integer, db.ForeignKey('prefecture.id'))
-    pinpoints = db.relationship('PinpointLocation', backref='city',
-                                lazy='dynamic')
+    id = db.Column(db.Integer, primary_key=True)
+    code = db.Column(db.Integer)
+    name = db.Column(db.String(64))
+    subprefecture_id = db.Column(
+        db.Integer,
+        db.ForeignKey('subprefecture.id')
+    )
 
     def __repr__(self):
         return '<City {}>'.format(self.name)

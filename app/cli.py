@@ -1,11 +1,10 @@
 from flask import Blueprint
-from tenkihaxjp import ForecastArea, ForecastSummary
+from tenki_no_ko import LocationScraper
 from traininfojp import RailList, RailSummary
 
 from app import db
 from app.models import (
     City,
-    PinpointLocation,
     Prefecture,
     RailwayCategory,
     RailwayCompany,
@@ -14,6 +13,7 @@ from app.models import (
     RailwayRegion,
     Region,
     Setting,
+    Subprefecture,
     User
 )
 
@@ -41,32 +41,46 @@ def add_admin_user():
 def add_forecast_areas():
     print('Add forecast areas')
 
-    fcst_area = ForecastArea()
-    fcst_area.fetch_parse_html_source()
-    areas = fcst_area.get_all_main_areas()
+    scraper = LocationScraper()
+    regions = scraper.extract_regions()
 
-    for region_name, prefectures in areas.items():
-        region = Region(name=region_name)
+    for region_code, region_name in regions.items():
+        region = Region(code=region_code, name=region_name)
         db.session.add(region)
 
-        for prefecture_name, cities in prefectures.items():
-            pref = Prefecture(name=prefecture_name, region=region)
-            db.session.add(pref)
+        prefectures = scraper.extract_prefectures(region_code)
 
-            for city_id, city_name in cities.items():
-                city = City(id=city_id, name=city_name, prefecture=pref)
-                db.session.add(city)
+        for prefecture_code, prefecture_name in prefectures.items():
+            prefecture = Prefecture(
+                code=prefecture_code,
+                name=prefecture_name,
+                region=region
+            )
+            db.session.add(prefecture)
 
-                fcst_summary = ForecastSummary()
-                fcst_summary.fetch_weather_data(city_id)
+            subprefectures_cities = scraper.extract_subprefectures_and_cities(
+                region_id=region_code,
+                prefecture_id=prefecture_code
+            )
 
-                for location in fcst_summary.get_pinpoint_locations():
-                    loc_id = location['link'].rsplit('/', 1)[-1]
-                    loc_name = location['name']
+            for subprefecture_name, city_codes in (
+                    subprefectures_cities.items()):
+                subprefecture = None
+                for city_code, city_info in city_codes.items():
+                    if subprefecture is None:
+                        subprefecture = Subprefecture(
+                            code=city_info['subprefecture_id'],
+                            name=subprefecture_name,
+                            prefecture=prefecture
+                        )
+                        db.session.add(subprefecture)
 
-                    pinpoint = PinpointLocation(id=loc_id, name=loc_name,
-                                                city=city)
-                    db.session.add(pinpoint)
+                    city = City(
+                        code=city_code,
+                        name=city_info['city_name'],
+                        subprefecture=subprefecture
+                    )
+                    db.session.add(city)
 
 
 def add_regular_railway_data():

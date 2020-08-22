@@ -23,6 +23,7 @@ setup(
         'pytenki>=1.0.0',
         'python-dotenv>=0.12.0',
         'redis>=3.4.1',
+        'tenki-no-ko>=0.0.0',
         'tenkihaxjp>=1.0.0',
         'traininfojp>=1.0.0',
     ],
