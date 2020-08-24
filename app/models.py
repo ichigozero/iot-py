@@ -104,15 +104,6 @@ class City(db.Model):
         return '<City {}>'.format(self.name)
 
 
-class PinpointLocation(db.Model):
-    id = db.Column(db.Integer, primary_key=True, autoincrement=False)
-    name = db.Column(db.String(64), index=True)
-    city_id = db.Column(db.Integer, db.ForeignKey('city.id'))
-
-    def __repr__(self):
-        return '<PinpointLocation {}>'.format(self.name)
-
-
 class RailwayCategory(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True)
