@@ -7,9 +7,6 @@
 [submodule "submodules/pytenki"]
 	path = submodules/pytenki
 	url = git@github.com:ichigozero/pytenki.git
-[submodule "submodules/tenkihaxjp"]
-	path = submodules/tenkihaxjp
-	url = git@github.com:ichigozero/tenkihaxjp.git
 [submodule "submodules/tenki-no-ko"]
 	path = submodules/tenki-no-ko
 	url = git@github.com:ichigozero/tenki-no-ko.git
