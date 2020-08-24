@@ -21,15 +21,29 @@ def test_init_pytenki_task(mocker, pytenki_task):
 
 
 def test_get_fetched_pytenki_data(mocker, pytenki_task):
-    spy_summary = mocker.spy(pytenki_task.fcast_summary,
-                             'fetch_weather_data')
-    spy_details = mocker.spy(pytenki_task.fcast_details,
-                             'fetch_parse_html_source')
-    spy_leds = mocker.spy(pytenki_task.pytenki,
-                          'operate_all_weather_leds')
-    spy_button = mocker.spy(pytenki_task.pytenki,
-                            'tts_forecast_summary_after_button_press')
-    spy_sse = mocker.spy(sse, 'publish')
+    pytenki_task.location_codes = {
+        'region_id': 1,
+        'prefecture_id': 1,
+        'subprefecture_id': 1,
+        'city_id': 1
+    }
+
+    spy_forecast_summary = mocker.spy(
+        pytenki_task.weather_scraper,
+        'extract_forecast_summary'
+    )
+    spy_hourly_forecast = mocker.spy(
+        pytenki_task.weather_scraper,
+        'extract_3_hourly_forecasts_for_next_24_hours'
+    )
+    spy_leds = mocker.patch.object(
+        pytenki_task.pytenki,
+        'operate_all_weather_leds'
+    )
+    spy_button = mocker.patch.object(
+        pytenki_task.pytenki,
+        'tts_forecast_summary_after_button_press'
+    )
 
     pytenki_task.init_task()
     pytenki_task.start()
@@ -37,36 +51,37 @@ def test_get_fetched_pytenki_data(mocker, pytenki_task):
     expected = {
         'fcast': {
             'today': {
-                'day': 'Today',
-                'city': 'Tokyo',
+                'date': 'Today',
                 'weather': 'Fine',
-                'temp': {'max': 1, 'min': 0}
+                'temps': {
+                    'high': '12℃. [+1]',
+                    'low': '11℃. [+1]',
+                }
             },
             'tomorrow': {
-                'day': 'Tomorrow',
-                'city': 'Tokyo',
+                'date': 'Tomorrow',
                 'weather': 'Fine',
-                'temp': {'max': 1, 'min': 0}
+                'temps': {
+                    'high': '10℃. [+1]',
+                    'low': '9℃. [+1]',
+                }
             },
         },
         'fcast_24_hours': [
-            {'time': '9', 'temp': '', 'weather': ''},
-            {'time': '12', 'temp': '', 'weather': ''},
-            {'time': '15', 'temp': '', 'weather': ''},
-            {'time': '18', 'temp': '', 'weather': ''},
-            {'time': '21', 'temp': '', 'weather': ''},
-            {'time': '0', 'temp': '', 'weather': ''},
-            {'time': '3', 'temp': '', 'weather': ''},
-            {'time': '6', 'temp': '', 'weather': ''},
-            {'time': '9', 'temp': '', 'weather': ''}
+            {'hour': '09', 'temp': '', 'weather': ''},
+            {'hour': '12', 'temp': '', 'weather': ''},
+            {'hour': '15', 'temp': '', 'weather': ''},
+            {'hour': '18', 'temp': '', 'weather': ''},
+            {'hour': '21', 'temp': '', 'weather': ''},
+            {'hour': '24', 'temp': '', 'weather': ''},
+            {'hour': '03', 'temp': '', 'weather': ''},
+            {'hour': '06', 'temp': '', 'weather': ''},
         ],
-        'fcast_loc': '(Tokyo/Minato-ku)'
+        'fcast_loc': 'Minato-ku',
     }
 
-    spy_summary.assert_called_once_with(1)
-    spy_details.assert_called_once_with(1)
-    spy_sse.assert_called_once_with(pytenki_task.get_fetched_data(),
-                                    type='pytenki')
+    spy_forecast_summary.assert_called_once_with(pytenki_task.location_codes)
+    spy_hourly_forecast.assert_called_once_with(pytenki_task.location_codes)
     spy_leds.assert_called_once_with(on_time=1.0, off_time=1.0,
                                      fade_in_time=1.0, fade_out_time=1.0)
     spy_button.assert_called_once()
@@ -85,13 +100,12 @@ def test_init_pydensha_task(mocker, pydensha_task):
 
 def test_get_fetched_pydensha_data(mocker, pydensha_task):
     spy_led = mocker.spy(pydensha_task.pydensha, 'operate_led')
-    spy_sse = mocker.spy(sse, 'publish')
 
     pydensha_task.init_task()
     pydensha_task.start()
 
     expected = {
-        'rail_category': 'railway_category',
+        'rail_category': 'rail_category',
         'rail_info': {
             '1': {
                 'kanji_name': 'Yamanote Line',
@@ -100,8 +114,6 @@ def test_get_fetched_pydensha_data(mocker, pydensha_task):
             },
         },
     }
-    spy_sse.assert_called_once_with(pydensha_task.get_fetched_data(),
-                                    type='pydensha')
     spy_led.assert_called_once_with(train_infos=['Delayed'], on_time=1.0,
                                     off_time=1.0)
     assert pydensha_task.get_fetched_data() == expected

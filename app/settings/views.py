@@ -6,7 +6,6 @@ from app import db
 from app.helper import get_dict_val
 from app.models import (
     City,
-    PinpointLocation,
     Prefecture,
     RailwayCategory,
     RailwayCompany,
@@ -14,7 +13,8 @@ from app.models import (
     RailwayLine,
     RailwayRegion,
     Region,
-    Setting
+    Setting,
+    Subprefecture,
 )
 from app.settings import bp
 from app.settings.forms import PyTenkiForm, PyDenshaForm
@@ -27,8 +27,8 @@ def store_pytenki_form_data_to_db(form, gpio):
             'fcst_area': {
                 'region_id': form.region.data.id,
                 'pref_id': form.prefecture.data.id,
+                'subpref_id': form.subprefecture.data.id,
                 'city_id': form.city.data.id,
-                'pinpoint_id': form.pinpoint_loc.data.id
             },
             'fetch_intvl': form.fetch_intvl.data,
             'led_duration': {
@@ -76,14 +76,14 @@ def pytenki():
 
     region_id_old = get_dict_val(pytenki, ['fcst_area', 'region_id'])
     pref_id_old = get_dict_val(pytenki, ['fcst_area', 'pref_id'])
+    subpref_id_old = get_dict_val(pytenki, ['fcst_area', 'subpref_id'])
     city_id_old = get_dict_val(pytenki, ['fcst_area', 'city_id'])
-    pinpoint_id_old = get_dict_val(pytenki, ['fcst_area', 'pinpoint_id'])
 
     form = PyTenkiForm(
         region=Region.query.get(region_id_old),
         prefecture=Prefecture.query.get(pref_id_old),
+        subprefecture=Subprefecture.query.get(subpref_id_old),
         city=City.query.get(city_id_old),
-        pinpoint_loc=PinpointLocation.query.get(pinpoint_id_old),
         fetch_intvl=get_dict_val(pytenki, ['fetch_intvl']) or 35,
         blink_on_time=get_dict_val(
             pytenki, ['led_duration', 'blink_on_time']) or 3.0,
@@ -114,17 +114,24 @@ def pytenki():
         pref_id = pref_id or Prefecture.query.filter_by(
             region_id=region_id).first().id
 
-    city_id = request.form.get('city')
+    subpref_id = request.form.get('subprefecture')
 
     if pref_id == pref_id_old:
-        city_id = city_id or city_id_old
+        subpref_id = subpref_id or subpref_id_old
     else:
-        city_id = city_id or City.query.filter_by(pref_id=pref_id).first().id
+        subpref_id = (
+            subpref_id or
+            Subprefecture.query.filter_by(prefecture_id=pref_id).first().id
+        )
 
     form.region.query = Region.query
     form.prefecture.query = Prefecture.query.filter_by(region_id=region_id)
-    form.city.query = City.query.filter_by(pref_id=pref_id)
-    form.pinpoint_loc.query = PinpointLocation.query.filter_by(city_id=city_id)
+    form.subprefecture.query = (
+        Subprefecture
+        .query
+        .filter_by(prefecture_id=pref_id)
+    )
+    form.city.query = City.query.filter_by(subprefecture_id=subpref_id)
 
     if form.validate_on_submit():
         store_pytenki_form_data_to_db(form, gpio)
@@ -148,13 +155,16 @@ def pytenki():
 def areas_by_region():
     region_id = int(request.form.get('region'))
     prefectures = Prefecture.query.filter_by(region_id=region_id)
-    cities = City.query.filter_by(pref_id=prefectures.first().id)
-    pinpoints = PinpointLocation.query.filter_by(city_id=cities.first().id)
+    subprefectures = (
+        Subprefecture
+        .query.filter_by(prefecture_id=prefectures.first().id)
+    )
+    cities = City.query.filter_by(subprefecture_id=subprefectures.first().id)
 
     choices = {
         'prefectures': get_dropdown_choices(prefectures),
+        'subprefectures': get_dropdown_choices(subprefectures),
         'cities': get_dropdown_choices(cities),
-        'pinpoints': get_dropdown_choices(pinpoints)
     }
 
     return jsonify(choices=choices)
@@ -164,23 +174,23 @@ def areas_by_region():
 @login_required
 def areas_by_prefecture():
     pref_id = int(request.form.get('prefecture'))
-    cities = City.query.filter_by(pref_id=pref_id)
-    pinpoints = PinpointLocation.query.filter_by(city_id=cities.first().id)
+    subprefectures = Subprefecture.query.filter_by(prefecture_id=pref_id)
+    cities = City.query.filter_by(subprefecture_id=subprefectures.first().id)
 
     choices = {
+        'subprefectures': get_dropdown_choices(subprefectures),
         'cities': get_dropdown_choices(cities),
-        'pinpoints': get_dropdown_choices(pinpoints)
     }
 
     return jsonify(choices=choices)
 
 
-@bp.route('/settings/pytenki/areas-by-city', methods=['POST'])
+@bp.route('/settings/pytenki/areas-by-subprefecture', methods=['POST'])
 @login_required
-def areas_by_city():
-    city_id = int(request.form.get('city'))
-    pinpoints = PinpointLocation.query.filter_by(city_id=city_id)
-    choices = {'pinpoints': get_dropdown_choices(pinpoints)}
+def areas_by_subprefecture():
+    subpref_id = int(request.form.get('subprefecture'))
+    cities = City.query.filter_by(subprefecture_id=subpref_id)
+    choices = {'cities': get_dropdown_choices(cities)}
 
     return jsonify(choices=choices)
 

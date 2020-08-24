@@ -26,6 +26,7 @@ Mako==1.1.2
 MarkupSafe==1.1.1
 more-itertools==8.2.0
 packaging==20.3
+pigpio==1.46
 pluggy==0.13.1
 py==1.8.1
 pydensha==1.0.0
@@ -38,11 +39,13 @@ python-dotenv==0.12.0
 python-editor==1.0.4
 redis==3.4.1
 requests==2.23.0
+RPi.GPIO==0.7.0
 simplejson==3.17.0
 six==1.14.0
 soupsieve==2.0
 SQLAlchemy==1.3.15
 SQLAlchemy-Utils==0.36.3
+tenki-no-ko==0.0.0
 tenkihaxjp==1.0.0
 traininfojp==1.0.0
 urllib3==1.25.9

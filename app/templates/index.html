@@ -9,7 +9,7 @@
       <div class="card border-primary">
         <div
           class="card-header text-white text-center bg-primary"
-        >天気予報<span id="forecast-loc">{{ fcast_loc }}</span></div>
+        >天気予報<span id="forecast-loc"> [{{ fcast_loc }}]</span></div>
         <div class="card-body">
           <div class="row table-responsive">
             <table class="table table-bordered">
@@ -31,19 +31,19 @@
                 <tr>
                   <th scope="row">最高気温</th>
                   <td id="today-max-temp">
-                    {{ today_fcast['temp']['max'] or '' }}
+                    {{ today_fcast['temps']['high'] or '' }}
                   </td>
                   <td id="tomorrow-max-temp">
-                    {{ tomorrow_fcast['temp']['max'] or '' }}
+                    {{ tomorrow_fcast['temps']['high'] or '' }}
                   </td>
                 </tr>
                 <tr>
                   <th scope="row">最低気温</th>
                   <td id="today-min-temp">
-                    {{ today_fcast['temp']['min'] or '' }}
+                    {{ today_fcast['temps']['low'] or '' }}
                   </td>
                   <td id="tomorrow-min-temp">
-                    {{ tomorrow_fcast['temp']['min'] or '' }}
+                    {{ tomorrow_fcast['temps']['low'] or '' }}
                   </td>
                 </tr>
               </tbody>
@@ -55,7 +55,7 @@
                 <tr>
                   <td>時間</td>
                   {% for item in fcast_24_hours %}
-                  <td id="hour-{{ loop.index }}">{{ item['time'] }}</td>
+                  <td id="hour-{{ loop.index }}">{{ item['hour'] }}</td>
                   {% endfor %}
                 </tr>
                 <tr>
@@ -84,7 +84,7 @@
       <div class="card border-primary">
         <div
           class="card-header text-white text-center bg-primary"
-        >路線情報<span id="rail-category">{{ rail_category }}</span></div>
+        >路線情報<span id="rail-category"> [{{ rail_category }}]</span></div>
         <div class="card-body">
           <div class="row table-responsive">
             <table id="rail-info" class="table table-bordered">
