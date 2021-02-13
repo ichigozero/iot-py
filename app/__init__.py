@@ -17,7 +17,7 @@ pydensha_task = None
 
 
 def create_app(class_config=Config):
-    app = Flask(__name__)
+    app = Flask(__name__, static_url_path='/iot-py/static')
     app.config.from_object(class_config)
 
     csrf.init_app(app)
@@ -26,18 +26,18 @@ def create_app(class_config=Config):
     login.init_app(app)
 
     from app.main import bp as main_bp
-    app.register_blueprint(main_bp)
+    app.register_blueprint(main_bp, url_prefix='/iot-py')
 
     from app.auth import bp as auth_bp
-    app.register_blueprint(auth_bp)
+    app.register_blueprint(auth_bp, url_prefix='/iot-py')
 
     from app.settings import bp as settings_bp
-    app.register_blueprint(settings_bp)
+    app.register_blueprint(settings_bp, url_prefix='/iot-py')
 
     from app.cli import bp as cli_bp
-    app.register_blueprint(cli_bp)
+    app.register_blueprint(cli_bp, url_prefix='/iot-py')
 
-    app.register_blueprint(sse, url_prefix='/stream')
+    app.register_blueprint(sse, url_prefix='/iot-py/stream')
 
     return app
 

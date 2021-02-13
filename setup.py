@@ -19,6 +19,7 @@ setup(
         'Flask-WTF>=0.14.3',
         'gevent>=20.4.0',
         'gunicorn>=20.0.4',
+        'pigpio>=1.46',
         'pydensha>=1.0.0',
         'pytenki>=1.0.0',
         'python-dotenv>=0.12.0',
