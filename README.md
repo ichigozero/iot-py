@@ -8,6 +8,11 @@ the following configuration:
 - Redis v5.0.3
 - Nginx v1.14.2
 
+# Wiring
+See below diagram for wiring reference.
+
+![wiring](/diagram/wiring.jpg)
+
 # Installation
 1. Clone this repo
 2. Clone the submodule repositories
