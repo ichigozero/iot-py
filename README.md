@@ -140,3 +140,21 @@ See below diagram for wiring reference.
    Username: admin
    Password: Computer1
    ```
+
+# Text-To-Speech (TTS)
+TTS can be utilized by pressing a push button wired to Raspberry Pi.
+Note that TTS engine must be installed first.
+
+1. Install TTS engine with the following command
+
+   ```bash
+   $ sudo apt-get install -y open-jtalk open-jtalk-mecab-naist-jdic hts-voice-nitech-jp-atr503-m001
+   ```
+
+2. (Optional) Change TTS voice file
+
+   ```bash
+   $ wget https://sourceforge.net/projects/mmdagent/files/MMDAgent_Example/MMDAgent_Example-1.7/MMDAgent_Example-1.7.zip --no-check-certificate
+   $ unzip MMDAgent_Example-1.7.zip
+   $ sudo cp -R ./MMDAgent_Example-1.7/Voice/mei /usr/share/hts-voice/
+   ```
