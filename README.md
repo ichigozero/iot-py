@@ -34,6 +34,10 @@ See below diagram for wiring reference.
 
 ![wiring](/diagram/wiring.jpg)
 
+# Demo
+
+![demo](/diagram/demo.jpg)
+
 # Installation
 1. Clone this repo
 2. Clone the submodule repositories
