@@ -8,6 +8,27 @@ the following configuration:
 - Redis v5.0.3
 - Nginx v1.14.2
 
+When deploying to Raspberry Pi make sure `pigpio` library is
+installed and loaded. The procedure is as follows:
+
+1. Install `pigpio` library
+
+   ```bash
+   $ sudo apt install pigpio
+   ```
+
+2. Start `pigpio` Daemon
+
+   ```bash
+   $ sudo systemctl start pigpiod
+   ```
+
+3. (Optional) Set `pigpio` Daemon to auto-start on boot
+
+   ```bash
+   $ sudo systemctl enable pigpiod
+   ```
+
 # Wiring
 See below diagram for wiring reference.
 
@@ -108,31 +129,37 @@ See below diagram for wiring reference.
    }
    ```
 
-9. Reload systemd and start iot-py service
+9. Reload systemd and start `iot-py` service
 
    ```bash
    $ sudo systemctl daemon-reload
    $ sudo systemctl start iot-py
    ```
 
-10. (Optional) Verify that iot-py service is running
+10. (Optional) Set `iot-py` service to auto-start on boot
 
-   ```bash
-   $ sudo systemctl status iot-py
-   ```
+    ```bash
+    $ sudo systemctl enable iot-py
+    ```
 
-11. Reload nginx
+11. (Optional) Verify that `iot-py` service is running
+
+    ```bash
+    $ sudo systemctl status iot-py
+    ```
+
+12. Reload nginx
 
     ```bash
     $ sudo systemctl reload nginx
     ```
 
 # Configuration
-  1. Login into admin page by visiting the following URL
+1. Login into admin page by visiting the following URL
 
-  ```
-  <IP or Host Name>/iot-py/admin
-  ```
+   ```
+   <IP or Host Name>/iot-py/admin
+   ```
 
 2. Enter the following username and password.
 
